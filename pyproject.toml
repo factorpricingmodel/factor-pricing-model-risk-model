@@ -1,0 +1,101 @@
+[tool.poetry]
+name = "factor-pricing-model-risk-model"
+version = "2022.1.8"
+description = "Package to build risk models for factor pricing model"
+authors = ["Factor Pricing Model <factor.pricing.model@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/factorpricingmodel/factor-pricing-model-risk-model"
+documentation = "https://factor-pricing-model-risk-model.readthedocs.io"
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries",
+]
+packages = [
+    { include = "fpm_risk_model", from = "src" },
+]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/factorpricingmodel/factor-pricing-model-risk-model/issues"
+"Changelog" = "https://github.com/factorpricingmodel/factor-pricing-model-risk-model/blob/master/CHANGELOG.md"
+
+[tool.poetry.dependencies]
+python = ">=3.7.1,<4.0"
+
+# Documentation Dependencies
+Sphinx = {version = "^5.0", optional = true}
+insipid-sphinx-theme = {version = "^0.3.6", optional = true}
+myst-parser = {version = "^0.18", optional = true}
+pandas = ">=1.3.5,<1.4.0"
+jq = "^1.3.0"
+pyyaml = "^6.0"
+
+[tool.poetry.extras]
+docs = [
+    "myst-parser",
+    "sphinx",
+    "insipid-sphinx-theme",
+]
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.0"
+pytest-cov = "^3.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.10.0"
+docformatter = "^1.5.0"
+
+[tool.semantic_release]
+branch = "master"
+version_toml = "pyproject.toml:tool.poetry.version"
+version_variable = "src/fpm_risk_model/__init__.py:__version__"
+build_command = "pip install poetry && poetry build"
+
+[tool.pytest.ini_options]
+addopts = "-v -Wdefault --cov=fpm_risk_model --cov-report=term-missing:skip-covered"
+pythonpath = ["src"]
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "@overload",
+    "if TYPE_CHECKING",
+    "raise NotImplementedError",
+]
+
+[tool.isort]
+profile = "black"
+known_first_party = ["fpm_risk_model", "tests"]
+
+[tool.mypy]
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+mypy_path = "src/"
+no_implicit_optional = true
+show_error_codes = true
+warn_unreachable = true
+warn_unused_ignores = true
+exclude = [
+    'docs/.*',
+    'setup.py',
+]
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+allow_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = "docs.*"
+ignore_errors = true
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
