@@ -40,10 +40,10 @@ class PCA(FactorRiskModel):
         Parameters
         ----------
         X: pandas.DataFrame or numpy.ndarray
-          Instrument returns where the rows are the instruments
-          and the columns are the date / time in ascending order.
+          Instrument returns where the columns are the instruments
+          and the index is the date / time in ascending order.
           For example, if there are N instruments and T days of
-          returns, the input is with the dimension of (N, T).
+          returns, the input is with the dimension of (T, N).
 
         Returns
         -------
@@ -63,44 +63,47 @@ class PCA(FactorRiskModel):
 
         # Normalize the instrument return by full history mean
         if self._demean:
-            X_mean = np.array(np.mean(X, axis=1))[:, np.newaxis]
+            X_mean = np.array(np.mean(X, axis=0))[np.newaxis, :]
             X_fit = np.subtract(X_fit, X_mean)
 
         # Remove the instruments without any returns always
         if self._speedup:
             # Select the instruments of which the returns are not always 0
-            X_reindex = ~np.all(np.abs(X_fit) < 1e-20, axis=1)
-            X_fit = X_fit[X_reindex, :]
+            X_reindex = ~np.all(np.abs(X_fit) < 1e-20, axis=0)
+            X_fit = X_fit[:, X_reindex]
 
-        # Fit on the covariance matrix with dimension (N, N)
-        self._model.fit(X_fit.T)
-        # Dimension (N, n) where n is the number of instruments
+        # Fit with skilearn PCA on the return matrix (T, N)
+        self._model.fit(X_fit)
+        # N is the number of instruments and T is the number of time frames
+        T = X.shape[0]
+        N = X.shape[1]
+        # Dimension (n, N) where n is the number of instruments
         # Eigenvectors
-        U_m = self._model.components_.T
-        # Exposure matrix (N, n)
+        U_m = self._model.components_
+        # Exposure matrix (n, N)
         B = np.multiply(
             U_m,
-            np.array(self._model.singular_values_ * np.sqrt(X.shape[1]))[np.newaxis, :],
+            np.array(self._model.singular_values_ * np.sqrt(T))[:, np.newaxis],
         )
-        # Factor matrix (n, T)
-        F = np.linalg.pinv(B.T @ B) @ B.T @ X_fit
+        # Factor matrix (T, n)
+        F = X_fit @ (np.linalg.pinv(B @ B.T) @ B).T
         # Residual returns (N, T)
-        residual_returns = X_fit - B @ F
+        residual_returns = X_fit - F @ B
 
         # Fill back the instruments which don't have any returns
         # with 0.0 exposures and residual returns
         if self._speedup:
-            B_reindex = np.zeros((X.shape[0], self._n_components))
+            B_reindex = np.zeros((self._n_components, N))
             residual_returns_reindex = np.zeros(X.shape)
-            B_reindex[X_reindex, :] = B[:, :]
-            residual_returns_reindex[X_reindex, :] = residual_returns[:, :]
+            B_reindex[:, X_reindex] = B[:, :]
+            residual_returns_reindex[:, X_reindex] = residual_returns[:, :]
             B = B_reindex
             residual_returns = residual_returns_reindex
 
         # Convert back to dataframe if necessary
         if isinstance(X, pd.DataFrame):
-            B = pd.DataFrame(B, index=X.index)
-            F = pd.DataFrame(F, columns=X.columns)
+            B = pd.DataFrame(B, columns=X.columns)
+            F = pd.DataFrame(F, index=X.index)
             residual_returns = pd.DataFrame(
                 residual_returns, index=X.index, columns=X.columns
             )

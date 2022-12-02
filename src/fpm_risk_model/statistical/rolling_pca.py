@@ -54,10 +54,10 @@ class RollingPCA(FactorRiskModel):
         Parameters
         ----------
         X: pandas.DataFrame or numpy.ndarray
-          Instrument returns where the rows are the instruments
-          and the columns are the date / time in ascending order.
+          Instrument returns where the columns are the instruments
+          and the index is the date / time in ascending order.
           For example, if there are N instruments and T days of
-          returns, the input is with the dimension of (N, T).
+          returns, the input is with the dimension of (T, N).
 
         Returns
         -------
@@ -71,7 +71,8 @@ class RollingPCA(FactorRiskModel):
         factors = {}
         residual_returns = {}
 
-        iterator = range(0, X.shape[1])
+        T = X.shape[0]
+        iterator = range(0, T)
         if self._show_progress:
             from tqdm import tqdm
 
@@ -81,14 +82,14 @@ class RollingPCA(FactorRiskModel):
             for index in iterator:
                 start_index = index
                 end_index = index + self._rolling_timeframe + 1
-                if end_index > X.shape[1]:
+                if end_index > T:
                     break
 
                 if isinstance(X, pd.DataFrame):
-                    X_input = X.iloc[:, start_index:end_index]
-                    index_name = X.columns[end_index - 1]
+                    X_input = X.iloc[start_index:end_index, :]
+                    index_name = X.index[end_index - 1]
                 elif isinstance(X, np.ndarray):
-                    X_input = X[:, start_index:end_index]
+                    X_input = X[start_index:end_index, :]
                     index_name = end_index - 1
 
                 result = self._model.fit(X_input)
