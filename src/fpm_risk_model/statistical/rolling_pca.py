@@ -1,3 +1,4 @@
+import logging
 from typing import Optional, Union
 
 import numpy as np
@@ -5,6 +6,8 @@ import pandas as pd
 
 from ..factor_risk_model import FactorRiskModel
 from .pca import PCA
+
+LOGGER = logging.getLogger(__name__)
 
 
 class RollingPCA(FactorRiskModel):
@@ -14,6 +17,7 @@ class RollingPCA(FactorRiskModel):
         rolling_timeframe: int,
         demean: Optional[bool] = True,
         speedup: Optional[bool] = True,
+        show_progress: Optional[bool] = False,
     ):
         """
         Constructor.
@@ -29,12 +33,15 @@ class RollingPCA(FactorRiskModel):
         speedup: Optional[bool]
           Indicate whether to speed up the computation as much as possible.
           Default is True.
+        show_progress: Optional[bool]
+          Show the progress in interactive mode.
         """
         super().__init__()
         self._n_components = n_components
         self._demean = demean
         self._rolling_timeframe = rolling_timeframe
         self._speedup = speedup
+        self._show_progress = show_progress
         self._model = PCA(n_components=n_components, demean=demean, speedup=speedup)
 
     def fit(
@@ -57,26 +64,45 @@ class RollingPCA(FactorRiskModel):
         object
           The object itself.
         """
-        self._factor_exposures = {}
-        self._factors = {}
-        self._residual_returns = {}
+        self._factor_exposures = None
+        self._factors = None
+        self._residual_returns = None
+        factor_exposures = {}
+        factors = {}
+        residual_returns = {}
 
-        for index in range(0, X.shape[1]):
-            start_index = index
-            end_index = index + self._rolling_timeframe + 1
-            if end_index > X.shape[1]:
-                break
+        iterator = range(0, X.shape[1])
+        if self._show_progress:
+            from tqdm import tqdm
 
-            if isinstance(X, pd.DataFrame):
-                X_input = X.iloc[:, start_index:end_index]
-                index_name = X.columns[end_index - 1]
-            elif isinstance(X, np.ndarray):
-                X_input = X[:, start_index:end_index]
-                index_name = end_index - 1
+            iterator = tqdm(iterator)
 
-            result = self._model.fit(X_input)
-            self._factor_exposures[index_name] = result.factor_exposures
-            self._factors[index_name] = result.factors
-            self._residual_returns[index_name] = result.residual_returns
+        try:
+            for index in iterator:
+                start_index = index
+                end_index = index + self._rolling_timeframe + 1
+                if end_index > X.shape[1]:
+                    break
 
+                if isinstance(X, pd.DataFrame):
+                    X_input = X.iloc[:, start_index:end_index]
+                    index_name = X.columns[end_index - 1]
+                elif isinstance(X, np.ndarray):
+                    X_input = X[:, start_index:end_index]
+                    index_name = end_index - 1
+
+                result = self._model.fit(X_input)
+                factor_exposures[index_name] = result.factor_exposures
+                factors[index_name] = result.factors
+                residual_returns[index_name] = result.residual_returns
+        except Exception:
+            LOGGER.exception(
+                f"Failed to fit on the index {index}. For details, please refer to "
+                "the following error message."
+            )
+            raise
+
+        self._factor_exposures = factor_exposures
+        self._factors = factors
+        self._residual_returns = residual_returns
         return self

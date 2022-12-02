@@ -37,7 +37,7 @@ to the [documentation](https://factor-pricing-model-risk-models.readthedocs.io/e
 
 Install this via pip (or your favourite package manager):
 
-`pip install factor-pricing-model-risk models`
+`pip install factor-pricing-model-risk-models`
 
 ## Usage
 
