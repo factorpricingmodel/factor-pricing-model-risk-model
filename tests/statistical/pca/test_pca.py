@@ -1,9 +1,8 @@
-import pytest
-
 import numpy as np
 import pandas as pd
+import pytest
 
-from fpm_risk_model.statistical.pca import PCA
+from fpm_risk_model.statistical import PCA
 
 
 @pytest.fixture(scope="module")

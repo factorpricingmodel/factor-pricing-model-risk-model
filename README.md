@@ -31,7 +31,7 @@
 </p>
 
 Package to build risk models for factor pricing model. For further details, please refer
-to the [documentation](https://factor-pricing-model-risk models.readthedocs.io/en/latest/)
+to the [documentation](https://factor-pricing-model-risk-models.readthedocs.io/en/latest/)
 
 ## Installation
 
