@@ -5,6 +5,7 @@ import pandas as pd
 from sklearn.decomposition import PCA as sklearn_PCA
 
 from ..factor_risk_model import FactorRiskModel
+from ..regressors import WLS
 
 
 class PCA(FactorRiskModel):
@@ -86,7 +87,8 @@ class PCA(FactorRiskModel):
             np.array(self._model.singular_values_ * np.sqrt(T))[:, np.newaxis],
         )
         # Factor matrix (T, n)
-        F = X_fit @ (np.linalg.pinv(B @ B.T) @ B).T
+        wls = WLS()
+        F = wls.fit(X=B.T, y=X_fit.T).T
         # Residual returns (N, T)
         residual_returns = X_fit - F @ B
 
