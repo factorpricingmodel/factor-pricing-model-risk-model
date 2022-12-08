@@ -38,12 +38,12 @@ jobs:
         python-version:
           - "3.7"
           - "3.8"
-          - "3.9"
-          - "3.10"
+          # Not support 3.9 and 3.10 temporarily due to black on macOS
+          # - "3.9"
+          # - "3.10"
         os:
           - ubuntu-latest
-          # Not migrated back to macOS-latest until macOS-12 is matured enough
-          - macOS-11
+          - macOS-latest
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
