@@ -2,7 +2,7 @@
 
 Assume the historical instrument returns of the estimation universe is
 represented by a T x N matrix R. With singular value decomposition (SDV),
-the covariance matrix $\hat{Q}$ is decomposited by its eigenvectors and
+the covariance matrix $\hat{Q}$ is decomposed by its eigenvectors and
 eigenvalues.
 
 $$
@@ -28,4 +28,3 @@ $$
 
 where $W$ is the weight matrix in regression, e.g. an identity matrix in ordinary
 weighted least-squares.
-
