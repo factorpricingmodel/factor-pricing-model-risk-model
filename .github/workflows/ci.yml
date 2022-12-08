@@ -42,7 +42,8 @@ jobs:
           - "3.10"
         os:
           - ubuntu-latest
-          - macOS-latest
+          # Not migrated back to macOS-latest until macOS-12 is matured enough
+          - macOS-11
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
