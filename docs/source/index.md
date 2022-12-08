@@ -14,6 +14,13 @@ installation
 ```
 
 ```{toctree}
+:caption: Risk Model
+:maxdepth: 2
+
+statistical
+```
+
+```{toctree}
 :caption: Project Info
 :maxdepth: 2
 

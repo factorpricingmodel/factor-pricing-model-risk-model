@@ -30,18 +30,18 @@
   <img src="https://img.shields.io/pypi/l/factor-pricing-model-risk-model.svg?style=flat-square" alt="License">
 </p>
 
-Package to build risk models for factor pricing model. For further details, please refer
-to the [documentation](https://factor-pricing-model-risk-models.readthedocs.io/en/latest/)
+Package to build risk model for factor pricing model. For further details, please refer
+to the [documentation](https://factor-pricing-model-risk-model.readthedocs.io/en/latest/)
 
 ## Installation
 
 Install this via pip (or your favourite package manager):
 
-`pip install factor-pricing-model-risk-models`
+`pip install factor-pricing-model-risk-model`
 
 ## Usage
 
-The library contains the pipelines to build the risk models. You can
+The library contains the pipelines to build the risk model. You can
 run the pipelines interactively in Jupyter Notebook.
 
 ```python
