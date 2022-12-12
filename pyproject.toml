@@ -49,7 +49,7 @@ black = "^22.10.0"
 docformatter = "^1.5.0"
 
 [tool.semantic_release]
-branch = "master"
+branch = "main"
 version_toml = "pyproject.toml:tool.poetry.version"
 version_variable = "src/fpm_risk_model/__init__.py:__version__"
 build_command = "pip install poetry && poetry build"
