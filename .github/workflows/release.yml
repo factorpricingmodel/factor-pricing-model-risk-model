@@ -6,7 +6,7 @@ on:
       release:
         description: "Release type"
         required: true
-        default: "patch"
+        default: "minor"
 
 jobs:
   release:
