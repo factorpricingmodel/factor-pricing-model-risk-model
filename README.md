@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://github.com/factorpricingmodel/factor-pricing-model-risk-model/actions?query=workflow%3ACI">
-    <img src="https://img.shields.io/github/workflow/status/factorpricingmodel/factor-pricing-model-risk-model/CI/main?label=CI&logo=github&style=flat-square" alt="CI Status" >
+    <img src="https://github.com/factorpricingmodel/factor-pricing-model-risk-model/actions/workflows/ci.yml/badge.svg" alt="CI Status" >
   </a>
   <a href="https://factor-pricing-model-risk-model.readthedocs.io">
     <img src="https://img.shields.io/readthedocs/factor-pricing-model-risk-model.svg?logo=read-the-docs&logoColor=fff&style=flat-square" alt="Documentation Status">
