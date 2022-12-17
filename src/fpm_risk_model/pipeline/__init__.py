@@ -63,8 +63,14 @@ def export_factor_risk_model(
     )
 
     _export(
-        name="factors",
-        data=risk_model.factors,
+        name="factor-returns",
+        data=risk_model.factor_returns,
+        output_directory=output_directory,
+    )
+
+    _export(
+        name="factor-covariances",
+        data=risk_model.factor_covariances,
         output_directory=output_directory,
     )
 

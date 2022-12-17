@@ -89,6 +89,11 @@ def expected_residual_returns():
     )
 
 
+@pytest.fixture(scope="module")
+def expected_factor_covariances():
+    return array([[1.11111111e-02, -1.13074741e-18], [-1.13074741e-18, 1.11111111e-02]])
+
+
 @pytest.mark.parametrize("speedup", [True, False])
 def test_pca_np(
     daily_returns_np,
@@ -96,6 +101,7 @@ def test_pca_np(
     expected_factor_exposures,
     expected_factor_returns,
     expected_residual_returns,
+    expected_factor_covariances,
 ):
     pca = PCA(n_components=2, demean=True, speedup=speedup)
     pca.fit(X=daily_returns_np)
@@ -106,6 +112,10 @@ def test_pca_np(
     np.testing.assert_almost_equal(
         pca.factor_returns,
         expected_factor_returns,
+    )
+    np.testing.assert_almost_equal(
+        pca.factor_covariances,
+        expected_factor_covariances,
     )
     np.testing.assert_almost_equal(
         pca.residual_returns,
@@ -120,6 +130,7 @@ def test_pca_pd(
     expected_factor_exposures,
     expected_factor_returns,
     expected_residual_returns,
+    expected_factor_covariances,
     instruments,
     dates,
 ):
@@ -148,5 +159,13 @@ def test_pca_pd(
             expected_residual_returns,
             columns=instruments,
             index=dates,
+        ),
+    )
+    pd.testing.assert_frame_equal(
+        pca.factor_covariances,
+        pd.DataFrame(
+            expected_factor_covariances,
+            index=pca.factor_covariances.index,
+            columns=pca.factor_covariances.columns,
         ),
     )

@@ -191,6 +191,21 @@ def expected_residual_returns():
     }
 
 
+@pytest.fixture(scope="module")
+def expected_factor_covariances():
+    return {
+        5: array([[3.33333333e-02, 1.40814262e-17], [1.40814262e-17, 3.33333333e-02]]),
+        6: array(
+            [[3.33333333e-02, -2.28231612e-18], [-2.28231612e-18, 3.33333333e-02]]
+        ),
+        7: array([[3.33333333e-02, 2.16127524e-18], [2.16127524e-18, 3.33333333e-02]]),
+        8: array([[3.33333333e-02, 1.06125286e-17], [1.06125286e-17, 3.33333333e-02]]),
+        9: array(
+            [[3.33333333e-02, -1.16594080e-17], [-1.16594080e-17, 3.33333333e-02]]
+        ),
+    }
+
+
 @pytest.mark.parametrize("speedup", [False, True])
 def test_rolling_pca_np(
     daily_returns_np,
@@ -198,6 +213,7 @@ def test_rolling_pca_np(
     expected_factor_exposures,
     expected_factor_returns,
     expected_residual_returns,
+    expected_factor_covariances,
 ):
     rolling_pca = RollingPCA(
         n_components=2,
@@ -211,10 +227,15 @@ def test_rolling_pca_np(
             expected_factor_exposures[key],
             factor_exposures,
         )
-    for key, factors in rolling_pca.factor_returns.items():
+    for key, factor_returns in rolling_pca.factor_returns.items():
         np.testing.assert_almost_equal(
             expected_factor_returns[key],
-            factors,
+            factor_returns,
+        )
+    for key, factor_covariances in rolling_pca.factor_covariances.items():
+        np.testing.assert_almost_equal(
+            expected_factor_covariances[key],
+            factor_covariances,
         )
     for key, residual_returns in rolling_pca.residual_returns.items():
         np.testing.assert_almost_equal(
@@ -230,6 +251,7 @@ def test_rolling_pca_pd(
     expected_factor_exposures,
     expected_factor_returns,
     expected_residual_returns,
+    expected_factor_covariances,
     dates,
     instruments,
 ):
@@ -258,6 +280,16 @@ def test_rolling_pca_pd(
                 expected_factor_returns[np_key],
                 index=factor_returns.index,
                 columns=factor_returns.columns,
+            ),
+        )
+    for key, factor_covariances in rolling_pca.factor_covariances.items():
+        np_key = dates.get_loc(key)
+        pd.testing.assert_frame_equal(
+            factor_covariances,
+            pd.DataFrame(
+                expected_factor_covariances[np_key],
+                index=factor_covariances.index,
+                columns=factor_covariances.columns,
             ),
         )
     for key, residual_returns in rolling_pca.residual_returns.items():

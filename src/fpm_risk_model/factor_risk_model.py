@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any, Dict, Union
 
 from numpy import ndarray
 
@@ -27,37 +28,58 @@ class FactorRiskModel(ABC):
         self,
         factor_exposures=None,
         factors_returns=None,
+        factor_covariances=None,
         residual_returns=None,
     ):
         self._factor_exposures = factor_exposures
         self._factors_returns = factors_returns
+        self._factor_covariances = factor_covariances
         self._residual_returns = residual_returns
 
     @property
-    def factor_exposures(self) -> ndarray:
+    def factor_exposures(self) -> Union[ndarray, Dict[Any, ndarray]]:
         """
         Return the factor exposures.
 
         Return
         ------
-        ndarray
+        Union[ndarray, Dict[Any, ndarray]]
           Matrix in dimension (n, N) where N is the number of
-          instruments and n is the number of components in PCA.
+          instruments and n is the number of components in PCA,
+          or a dictionary of which its values are matrices in
+          the mentioned format.
         """
         return self._factor_exposures
 
     @property
-    def factor_returns(self) -> ndarray:
+    def factor_returns(self) -> Union[ndarray, Dict[Any, ndarray]]:
         """
         Return the factor returns.
 
         Return
         ------
-        ndarray
+        Union[ndarray, Dict[Any, ndarray]]
           Matrix in dimension (T, n) where n is the number of
-          components in PCA and T is the number of time frames.
+          components in PCA and T is the number of time frames,
+          or a dictionary of which its values are matrices in
+          the mentioned format.
         """
         return self._factor_returns
+
+    @property
+    def factor_covariances(self) -> Union[ndarray, Dict[Any, ndarray]]:
+        """
+        Return the factor returns.
+
+        Return
+        ------
+        Union[ndarray, Dict[Any, ndarray]]
+          Matrix in dimension (n, n) where n is the number of
+          components in PCA,
+          or a dictionary of which its values are matrices in
+          the mentioned format.
+        """
+        return self._factor_covariances
 
     @property
     def residual_returns(self) -> ndarray:
@@ -66,9 +88,11 @@ class FactorRiskModel(ABC):
 
         Return
         ------
-        ndarray
+        Union[ndarray, Dict[Any, ndarray]]
           Matrix in dimension (T, N) where N is the number of
-          instruments and T is the number of time frames.
+          instruments and T is the number of time frames,
+          or a dictionary of which its values are matrices in
+          the mentioned format.
         """
         return self._residual_returns
 

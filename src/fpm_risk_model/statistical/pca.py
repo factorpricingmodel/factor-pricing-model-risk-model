@@ -91,6 +91,8 @@ class PCA(FactorRiskModel):
         F = wls.fit(X=B.T, y=X_fit.T).T
         # Residual returns (N, T)
         residual_returns = X_fit - F @ B
+        # Factor covariance matrix
+        F_cov = np.cov(F.T)
 
         # Fill back the instruments which don't have any returns
         # with 0.0 exposures and residual returns
@@ -112,9 +114,11 @@ class PCA(FactorRiskModel):
             residual_returns = pd.DataFrame(
                 residual_returns, index=X.index, columns=X.columns
             )
+            F_cov = pd.DataFrame(F_cov, index=factor_index, columns=factor_index)
 
         # Return itself out
         self._factor_exposures = B
         self._factor_returns = F
         self._residual_returns = residual_returns
+        self._factor_covariances = F_cov
         return self
