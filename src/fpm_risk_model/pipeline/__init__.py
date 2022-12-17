@@ -1,8 +1,9 @@
-from typing import Any, Dict, Optional
 from os import makedirs
-from os.path import join as fsjoin, dirname
-import pandas as pd
+from os.path import dirname
+from os.path import join as fsjoin
+from typing import Any, Dict, Optional
 
+import pandas as pd
 
 from ..factor_risk_model import FactorRiskModel
 

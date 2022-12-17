@@ -1,6 +1,7 @@
 from typing import Union
+
+from numpy import ndarray
 from numpy.linalg import pinv
-from numpy import ndarray, array
 
 
 class WLS:
