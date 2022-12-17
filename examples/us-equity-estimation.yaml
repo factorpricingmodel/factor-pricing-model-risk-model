@@ -1,0 +1,38 @@
+metadata:
+  output:
+    directory: "{output_directory}/estimation-risk-model"
+definitions:
+  output-cache: &output-cache
+    directory: null
+  output-parquet: &output-parquet
+    format: "parquet"
+    dump-caller: "object.to_parquet"
+    load-caller: "pandas:read_parquet"
+task:
+  validity:
+    output:
+      directory: "{output_directory}/estimation-universe"
+      <<: *output-parquet
+  adjusted-close:
+    output:
+      directory: "{output_directory}/xs_data"
+      <<: *output-parquet
+  validity-adjusted-close:
+    caller: "fpm_risk_model.pipeline:where_validity"
+    parameters:
+      validity: !data validity
+      data: !data adjusted-close
+      fillna: 0.0
+    output: *output-cache
+  factor-risk-model:
+    caller: "fpm_risk_model.pipeline:generate_factor_risk_model"
+    parameters:
+      model: "pca"
+      data: !data validity-adjusted-close
+      n_components: 20
+    output:
+      name: ""
+      format: "success"
+      dump-caller: "fpm_risk_model.pipeline:export_factor_risk_model"
+      dump-parameters:
+        format: "parquet"

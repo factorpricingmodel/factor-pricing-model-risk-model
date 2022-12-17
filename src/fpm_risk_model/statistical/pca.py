@@ -5,7 +5,7 @@ import pandas as pd
 from sklearn.decomposition import PCA as sklearn_PCA
 
 from ..factor_risk_model import FactorRiskModel
-from ..regressors import WLS
+from ..regressor import WLS
 
 
 class PCA(FactorRiskModel):
@@ -104,14 +104,17 @@ class PCA(FactorRiskModel):
 
         # Convert back to dataframe if necessary
         if isinstance(X, pd.DataFrame):
-            B = pd.DataFrame(B, columns=X.columns)
-            F = pd.DataFrame(F, index=X.index)
+            factor_index = [
+                f"factor_{index + 1}" for index in range(self._n_components)
+            ]
+            B = pd.DataFrame(B, index=factor_index, columns=X.columns)
+            F = pd.DataFrame(F, index=X.index, columns=factor_index)
             residual_returns = pd.DataFrame(
                 residual_returns, index=X.index, columns=X.columns
             )
 
         # Return itself out
         self._factor_exposures = B
-        self._factors = F
+        self._factor_returns = F
         self._residual_returns = residual_returns
         return self

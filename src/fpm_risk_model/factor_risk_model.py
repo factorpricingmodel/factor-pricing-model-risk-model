@@ -16,7 +16,8 @@ class FactorRiskModel(ABC):
     The factor exposures are the exposures of each instrument to the
     specified factors.
 
-    The factors are the factor returns among the date / time series.
+    The factor returns are returns among the date / time series for each
+    factor.
 
     The residual returns are the idiosyncratic returns of the instruments
     regarding the specified factor exposures and returns.
@@ -25,11 +26,11 @@ class FactorRiskModel(ABC):
     def __init__(
         self,
         factor_exposures=None,
-        factors=None,
+        factors_returns=None,
         residual_returns=None,
     ):
         self._factor_exposures = factor_exposures
-        self._factors = factors
+        self._factors_returns = factors_returns
         self._residual_returns = residual_returns
 
     @property
@@ -46,9 +47,9 @@ class FactorRiskModel(ABC):
         return self._factor_exposures
 
     @property
-    def factors(self) -> ndarray:
+    def factor_returns(self) -> ndarray:
         """
-        Return the factors.
+        Return the factor returns.
 
         Return
         ------
@@ -56,7 +57,7 @@ class FactorRiskModel(ABC):
           Matrix in dimension (T, n) where n is the number of
           components in PCA and T is the number of time frames.
         """
-        return self._factors
+        return self._factor_returns
 
     @property
     def residual_returns(self) -> ndarray:

@@ -54,7 +54,7 @@ def expected_factor_exposures():
 
 
 @pytest.fixture(scope="module")
-def expected_factors():
+def expected_factor_returns():
     return array(
         [
             [0.06323026, -0.15644581],
@@ -94,7 +94,7 @@ def test_pca_np(
     daily_returns_np,
     speedup,
     expected_factor_exposures,
-    expected_factors,
+    expected_factor_returns,
     expected_residual_returns,
 ):
     pca = PCA(n_components=2, demean=True, speedup=speedup)
@@ -104,8 +104,8 @@ def test_pca_np(
         expected_factor_exposures,
     )
     np.testing.assert_almost_equal(
-        pca.factors,
-        expected_factors,
+        pca.factor_returns,
+        expected_factor_returns,
     )
     np.testing.assert_almost_equal(
         pca.residual_returns,
@@ -118,7 +118,7 @@ def test_pca_pd(
     daily_returns_pd,
     speedup,
     expected_factor_exposures,
-    expected_factors,
+    expected_factor_returns,
     expected_residual_returns,
     instruments,
     dates,
@@ -130,14 +130,16 @@ def test_pca_pd(
         pca.factor_exposures,
         pd.DataFrame(
             expected_factor_exposures,
+            index=pca.factor_exposures.index,
             columns=instruments,
         ),
     )
     pd.testing.assert_frame_equal(
-        pca.factors,
+        pca.factor_returns,
         pd.DataFrame(
-            expected_factors,
+            expected_factor_returns,
             index=dates,
+            columns=pca.factor_returns.columns,
         ),
     )
     pd.testing.assert_frame_equal(

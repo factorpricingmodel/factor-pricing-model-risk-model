@@ -80,7 +80,7 @@ def expected_factor_exposures():
 
 
 @pytest.fixture(scope="module")
-def expected_factors():
+def expected_factor_returns():
     return {
         5: array(
             [
@@ -196,7 +196,7 @@ def test_rolling_pca_np(
     daily_returns_np,
     speedup,
     expected_factor_exposures,
-    expected_factors,
+    expected_factor_returns,
     expected_residual_returns,
 ):
     rolling_pca = RollingPCA(
@@ -211,9 +211,9 @@ def test_rolling_pca_np(
             expected_factor_exposures[key],
             factor_exposures,
         )
-    for key, factors in rolling_pca.factors.items():
+    for key, factors in rolling_pca.factor_returns.items():
         np.testing.assert_almost_equal(
-            expected_factors[key],
+            expected_factor_returns[key],
             factors,
         )
     for key, residual_returns in rolling_pca.residual_returns.items():
@@ -228,7 +228,7 @@ def test_rolling_pca_pd(
     daily_returns_pd,
     speedup,
     expected_factor_exposures,
-    expected_factors,
+    expected_factor_returns,
     expected_residual_returns,
     dates,
     instruments,
@@ -244,15 +244,20 @@ def test_rolling_pca_pd(
         np_key = dates.get_loc(key)
         pd.testing.assert_frame_equal(
             factor_exposures,
-            pd.DataFrame(expected_factor_exposures[np_key], columns=instruments),
+            pd.DataFrame(
+                expected_factor_exposures[np_key],
+                index=factor_exposures.index,
+                columns=instruments,
+            ),
         )
-    for key, factors in rolling_pca.factors.items():
+    for key, factor_returns in rolling_pca.factor_returns.items():
         np_key = dates.get_loc(key)
         pd.testing.assert_frame_equal(
-            factors,
+            factor_returns,
             pd.DataFrame(
-                expected_factors[np_key],
-                index=factors.index,
+                expected_factor_returns[np_key],
+                index=factor_returns.index,
+                columns=factor_returns.columns,
             ),
         )
     for key, residual_returns in rolling_pca.residual_returns.items():

@@ -68,7 +68,7 @@ class RollingPCA(FactorRiskModel):
         self._factors = None
         self._residual_returns = None
         factor_exposures = {}
-        factors = {}
+        factor_returns = {}
         residual_returns = {}
 
         T = X.shape[0]
@@ -94,7 +94,7 @@ class RollingPCA(FactorRiskModel):
 
                 result = self._model.fit(X_input)
                 factor_exposures[index_name] = result.factor_exposures
-                factors[index_name] = result.factors
+                factor_returns[index_name] = result.factor_returns
                 residual_returns[index_name] = result.residual_returns
         except Exception:
             LOGGER.exception(
@@ -104,6 +104,6 @@ class RollingPCA(FactorRiskModel):
             raise
 
         self._factor_exposures = factor_exposures
-        self._factors = factors
+        self._factor_returns = factor_returns
         self._residual_returns = residual_returns
         return self
