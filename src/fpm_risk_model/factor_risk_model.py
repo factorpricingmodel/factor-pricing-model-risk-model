@@ -1,5 +1,5 @@
-from abc import ABC, abstractmethod
-from typing import Any, Dict, Union
+from abc import ABC
+from typing import Any, Dict, Optional, Union
 
 from numpy import ndarray
 
@@ -8,8 +8,7 @@ class FactorRiskModel(ABC):
     """
     Factor Risk Model.
 
-    The class is an abstract class to fit the factor risk model,
-    and transform the input returns into a new model.
+    The class is an abstract class to fit the factor risk model.
 
     The factor risk model contains the data attribute `factor_exposures`,
     `factors` and `residual_returns`.
@@ -26,13 +25,27 @@ class FactorRiskModel(ABC):
 
     def __init__(
         self,
-        factor_exposures=None,
-        factors_returns=None,
-        factor_covariances=None,
-        residual_returns=None,
+        factor_exposures: Optional[Union[ndarray, Dict[Any, ndarray]]] = None,
+        factor_returns: Optional[Union[ndarray, Dict[Any, ndarray]]] = None,
+        factor_covariances: Optional[Union[ndarray, Dict[Any, ndarray]]] = None,
+        residual_returns: Optional[Union[ndarray, Dict[Any, ndarray]]] = None,
     ):
+        """
+        Constructor
+
+        Parameters
+        ----------
+        factor_exposures : Optional[Union[ndarray, Dict[Any, ndarray]]
+          Factor exposures of the factor risk model.
+        factors_returns : Optional[Union[ndarray, Dict[Any, ndarray]]]
+          Factor returns of the factor risk model.
+        factor_covariances : Optional[Union[ndarray, Dict[Any, ndarray]]]
+          Factor covariances of the factor risk model.
+        residual_returns : Optional[Union[ndarray, Dict[Any, ndarray]]]
+          Residual returns of the factor risk model.
+        """
         self._factor_exposures = factor_exposures
-        self._factors_returns = factors_returns
+        self._factor_returns = factor_returns
         self._factor_covariances = factor_covariances
         self._residual_returns = residual_returns
 
@@ -96,7 +109,6 @@ class FactorRiskModel(ABC):
         """
         return self._residual_returns
 
-    @abstractmethod
     def fit(self, X: ndarray) -> object:
         """
         Fit the model.

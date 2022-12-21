@@ -17,22 +17,26 @@ task:
     output:
       directory: "{output_directory}/xs_data"
       <<: *output-parquet
-  validity-adjusted-close:
+  adjusted-close-return:
+    object: !data adjusted-close
+    caller: "object.pct_change"
+    output: *output-cache
+  validity-adjusted-close-return:
     caller: "fpm_risk_model.pipeline:where_validity"
     parameters:
       validity: !data validity
-      data: !data adjusted-close
+      data: !data adjusted-close-return
       fillna: 0.0
     output: *output-cache
   factor-risk-model:
     caller: "fpm_risk_model.pipeline:generate_factor_risk_model"
     parameters:
       model: "pca"
-      data: !data validity-adjusted-close
+      data: !data validity-adjusted-close-return
       n_components: 20
     output:
       name: ""
       format: "success"
-      dump-caller: "fpm_risk_model.pipeline:export_factor_risk_model"
+      dump-caller: "fpm_risk_model.pipeline:dump_factor_risk_model"
       dump-parameters:
         format: "parquet"

@@ -12,6 +12,7 @@ class PCA(FactorRiskModel):
     def __init__(
         self,
         n_components: int,
+        transformer: Optional[object] = None,
         demean: Optional[bool] = True,
         speedup: Optional[bool] = True,
     ):
