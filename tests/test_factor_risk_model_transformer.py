@@ -1,8 +1,7 @@
-from numpy import array
 import numpy as np
 import pandas as pd
-
 import pytest
+from numpy import array
 
 from fpm_risk_model.factor_risk_model import FactorRiskModel
 from fpm_risk_model.factor_risk_model_transformer import FactorRiskModelTransformer

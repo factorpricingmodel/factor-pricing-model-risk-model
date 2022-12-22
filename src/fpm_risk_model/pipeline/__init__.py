@@ -6,6 +6,7 @@ from typing import Any, Dict, Optional
 import pandas as pd
 
 from ..factor_risk_model import FactorRiskModel
+from ..factor_risk_model_transformer import FactorRiskModelTransformer
 
 
 def generate_factor_risk_model(model, data, **kwargs):
@@ -25,6 +26,11 @@ def generate_factor_risk_model(model, data, **kwargs):
         raise ValueError(f"Model name {model} is not supported")
 
     return model.fit(X=data)
+
+
+def transform_factor_risk_model(risk_model, data, **kwargs):
+    transformer = FactorRiskModelTransformer()
+    return transformer.transform(risk_model=risk_model, y=data)
 
 
 def dump_factor_risk_model(

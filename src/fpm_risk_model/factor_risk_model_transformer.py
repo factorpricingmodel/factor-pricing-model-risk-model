@@ -1,8 +1,8 @@
 from numpy import ndarray
 from pandas import DataFrame
 
-from .regressor import WLS
 from .factor_risk_model import FactorRiskModel
+from .regressor import WLS
 
 
 class FactorRiskModelTransformer:
@@ -21,7 +21,7 @@ class FactorRiskModelTransformer:
         Transform
         """
         factor_returns = risk_model.factor_returns
-        if not isinstance(factor_returns, ndarray):
+        if not isinstance(factor_returns, (ndarray, DataFrame)):
             raise TypeError(
                 "Factor returns should be in numpy ndarray type, but got "
                 f"{factor_returns.__class__.__name__}. If it is a rolling "
@@ -29,8 +29,29 @@ class FactorRiskModelTransformer:
                 "instead"
             )
 
-        factor_exposures = self._regressor.fit(X=factor_returns, y=y)
-        residual_returns = y - factor_returns @ factor_exposures
+        X = factor_returns
+        B = risk_model.factor_exposures
+        y_input = y
+        if isinstance(factor_returns, DataFrame):
+            X = X.values
+            B = B.values
+            y_input = y.values
+
+        factor_exposures = self._regressor.fit(X=X, y=y_input)
+        residual_returns = y_input - X @ B
+
+        if isinstance(factor_returns, DataFrame):
+            factor_exposures = DataFrame(
+                factor_exposures,
+                index=risk_model.factor_exposures.index,
+                columns=y.columns,
+            )
+            residual_returns = DataFrame(
+                residual_returns,
+                index=y.index,
+                columns=y.columns,
+            )
+
         return FactorRiskModel(
             factor_exposures=factor_exposures,
             factor_returns=factor_returns,
@@ -49,7 +70,7 @@ class RollingFactorRiskModelTransformer:
         Constructor.
         """
         self._rolling_timeframe = rolling_timeframe
-        self._regressor = (regressor or WLS)(**kwargs)
+        self._transformer = FactorRiskModelTransformer(regressor=regressor, **kwargs)
 
     def transform(self, risk_model: object, y: ndarray) -> object:
         """
