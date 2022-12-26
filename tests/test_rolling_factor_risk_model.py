@@ -1,27 +1,14 @@
+from numpy import array
 import numpy as np
 import pandas as pd
+from pandas import Timestamp
+
 import pytest
-from numpy import array
 
-from fpm_risk_model.statistical import RollingPCA
+from fpm_risk_model.statistical import PCA
+from fpm_risk_model.rolling_factor_risk_model import RollingFactorRiskModel
 
-
-@pytest.fixture(scope="module")
-def daily_returns_np():
-    return array(
-        [
-            [-0.02678756, -0.03400254, 0.0, 0.000855],
-            [-0.00344077, -0.00953307, 0.0, -0.02505943],
-            [0.00443915, 0.01752232, 0.0, -0.01956966],
-            [-0.04247514, -0.01891826, 0.0, -0.04220453],
-            [-0.01051272, -0.00197782, 0.0, 0.00528776],
-            [-0.01684373, 0.01758743, 0.0, 0.01619198],
-            [0.00658919, 0.02239528, 0.0, 0.01451376],
-            [-0.03482585, -0.0452383, 0.0, -0.02571051],
-            [0.02034743, 0.01122229, 0.0, 0.02187115],
-            [-0.01329412, -0.04414332, 0.0, -0.02401548],
-        ]
-    )
+ROLLING_TIMEFRAME = 5
 
 
 @pytest.fixture(scope="module")
@@ -35,17 +22,36 @@ def dates():
 
 
 @pytest.fixture(scope="module")
-def daily_returns_pd(daily_returns_np, instruments, dates):
+def factors():
+    return [
+        "factor_1",
+        "factor_2",
+    ]
+
+
+@pytest.fixture(scope="module")
+def daily_returns(instruments, dates):
     return pd.DataFrame(
-        daily_returns_np,
+        [
+            [-0.02678756, -0.03400254, 0.0, 0.000855],
+            [-0.00344077, -0.00953307, 0.0, -0.02505943],
+            [0.00443915, 0.01752232, 0.0, -0.01956966],
+            [-0.04247514, -0.01891826, 0.0, -0.04220453],
+            [-0.01051272, -0.00197782, 0.0, 0.00528776],
+            [-0.01684373, 0.01758743, 0.0, 0.01619198],
+            [0.00658919, 0.02239528, 0.0, 0.01451376],
+            [-0.03482585, -0.0452383, 0.0, -0.02571051],
+            [0.02034743, 0.01122229, 0.0, 0.02187115],
+            [-0.01329412, -0.04414332, 0.0, -0.02401548],
+        ],
         columns=instruments,
         index=dates,
     )
 
 
 @pytest.fixture(scope="module")
-def expected_factor_exposures():
-    return {
+def expected_factor_exposures(dates, instruments, factors):
+    values = {
         5: array(
             [
                 [-0.06819719, -0.09404169, -0.0, -0.08397221],
@@ -77,11 +83,19 @@ def expected_factor_exposures():
             ]
         ),
     }
+    return {
+        dates[index]: pd.DataFrame(
+            df,
+            index=factors,
+            columns=instruments,
+        )
+        for index, df in values.items()
+    }
 
 
 @pytest.fixture(scope="module")
-def expected_factor_returns():
-    return {
+def expected_factor_returns(dates, factors):
+    values = {
         5: array(
             [
                 [0.12185252, 0.25302747],
@@ -133,11 +147,19 @@ def expected_factor_returns():
             ]
         ),
     }
+    return {
+        dates[index]: pd.DataFrame(
+            df,
+            index=dates[index - ROLLING_TIMEFRAME : index + 1],
+            columns=factors,
+        )
+        for index, df in values.items()
+    }
 
 
 @pytest.fixture(scope="module")
-def expected_residual_returns():
-    return {
+def expected_residual_returns(dates, instruments):
+    values = {
         5: array(
             [
                 [7.32481482e-03, -5.52766347e-03, 0.00000000e00, 2.41735367e-04],
@@ -189,11 +211,19 @@ def expected_residual_returns():
             ]
         ),
     }
+    return {
+        dates[index]: pd.DataFrame(
+            df,
+            index=dates[index - ROLLING_TIMEFRAME : index + 1],
+            columns=instruments,
+        )
+        for index, df in values.items()
+    }
 
 
 @pytest.fixture(scope="module")
-def expected_factor_covariances():
-    return {
+def expected_factor_covariances(dates, factors):
+    values = {
         5: array([[3.33333333e-02, 1.40814262e-17], [1.40814262e-17, 3.33333333e-02]]),
         6: array(
             [[3.33333333e-02, -2.28231612e-18], [-2.28231612e-18, 3.33333333e-02]]
@@ -204,101 +234,44 @@ def expected_factor_covariances():
             [[3.33333333e-02, -1.16594080e-17], [-1.16594080e-17, 3.33333333e-02]]
         ),
     }
+    return {
+        dates[index]: pd.DataFrame(
+            df,
+            index=factors,
+            columns=factors,
+        )
+        for index, df in values.items()
+    }
 
 
-@pytest.mark.parametrize("speedup", [False, True])
 def test_rolling_pca_np(
-    daily_returns_np,
-    speedup,
+    daily_returns,
     expected_factor_exposures,
     expected_factor_returns,
-    expected_residual_returns,
     expected_factor_covariances,
-):
-    rolling_pca = RollingPCA(
-        n_components=2,
-        rolling_timeframe=5,
-        demean=True,
-        speedup=speedup,
-    )
-    rolling_pca.fit(daily_returns_np)
-    for key, factor_exposures in rolling_pca.factor_exposures.items():
-        np.testing.assert_almost_equal(
-            expected_factor_exposures[key],
-            factor_exposures,
-        )
-    for key, factor_returns in rolling_pca.factor_returns.items():
-        np.testing.assert_almost_equal(
-            expected_factor_returns[key],
-            factor_returns,
-        )
-    for key, factor_covariances in rolling_pca.factor_covariances.items():
-        np.testing.assert_almost_equal(
-            expected_factor_covariances[key],
-            factor_covariances,
-        )
-    for key, residual_returns in rolling_pca.residual_returns.items():
-        np.testing.assert_almost_equal(
-            expected_residual_returns[key],
-            residual_returns,
-        )
-
-
-@pytest.mark.parametrize("speedup", [False, True])
-def test_rolling_pca_pd(
-    daily_returns_pd,
-    speedup,
-    expected_factor_exposures,
-    expected_factor_returns,
     expected_residual_returns,
-    expected_factor_covariances,
-    dates,
-    instruments,
 ):
-    rolling_pca = RollingPCA(
+    model = PCA(
         n_components=2,
-        rolling_timeframe=5,
         demean=True,
-        speedup=speedup,
+        speedup=True,
     )
-    rolling_pca.fit(daily_returns_pd)
-    for key, factor_exposures in rolling_pca.factor_exposures.items():
-        np_key = dates.get_loc(key)
+    rolling_model = RollingFactorRiskModel(
+        model=model,
+        rolling_timeframe=5,
+        show_progress=False,
+    )
+    rolling_model.fit(X=daily_returns)
+    for key, value in rolling_model.items():
         pd.testing.assert_frame_equal(
-            factor_exposures,
-            pd.DataFrame(
-                expected_factor_exposures[np_key],
-                index=factor_exposures.index,
-                columns=instruments,
-            ),
+            value.factor_returns, expected_factor_returns[key]
         )
-    for key, factor_returns in rolling_pca.factor_returns.items():
-        np_key = dates.get_loc(key)
         pd.testing.assert_frame_equal(
-            factor_returns,
-            pd.DataFrame(
-                expected_factor_returns[np_key],
-                index=factor_returns.index,
-                columns=factor_returns.columns,
-            ),
+            value.factor_exposures, expected_factor_exposures[key]
         )
-    for key, factor_covariances in rolling_pca.factor_covariances.items():
-        np_key = dates.get_loc(key)
         pd.testing.assert_frame_equal(
-            factor_covariances,
-            pd.DataFrame(
-                expected_factor_covariances[np_key],
-                index=factor_covariances.index,
-                columns=factor_covariances.columns,
-            ),
+            value.factor_covariances, expected_factor_covariances[key]
         )
-    for key, residual_returns in rolling_pca.residual_returns.items():
-        np_key = dates.get_loc(key)
         pd.testing.assert_frame_equal(
-            residual_returns,
-            pd.DataFrame(
-                expected_residual_returns[np_key],
-                columns=instruments,
-                index=residual_returns.index,
-            ),
+            value.residual_returns, expected_residual_returns[key]
         )

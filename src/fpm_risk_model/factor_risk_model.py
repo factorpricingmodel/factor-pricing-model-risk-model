@@ -114,3 +114,14 @@ class FactorRiskModel(ABC):
         Fit the model.
         """
         pass
+
+    def copy(self) -> object:
+        """
+        Copy the model.
+        """
+        return FactorRiskModel(
+            factor_exposures=self._factor_exposures.copy(),
+            factor_covariances=self._factor_covariances.copy(),
+            factor_returns=self._factor_returns.copy(),
+            residual_returns=self._residual_returns.copy(),
+        )
