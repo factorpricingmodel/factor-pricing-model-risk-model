@@ -1,5 +1,6 @@
+from datetime import datetime
 from os import makedirs
-from os.path import dirname
+from os.path import basename, dirname
 from os.path import join as fsjoin
 from typing import Any, Dict, Optional
 
@@ -7,9 +8,12 @@ import pandas as pd
 
 from ..factor_risk_model import FactorRiskModel
 from ..factor_risk_model_transformer import FactorRiskModelTransformer
+from ..rolling_factor_risk_model import RollingFactorRiskModel
 
 
-def generate_factor_risk_model(model, data, **kwargs):
+def generate_factor_risk_model(
+    model: str, data: pd.DataFrame, **kwargs
+) -> FactorRiskModel:
     """
     Generate factor risk model
     """
@@ -18,18 +22,30 @@ def generate_factor_risk_model(model, data, **kwargs):
         from ..statistical.pca import PCA
 
         model = PCA(**kwargs)
-    elif model == "rolling_pca":
-        from ..statistical.rolling_pca import RollingPCA
-
-        model = RollingPCA(**kwargs)
     else:
         raise ValueError(f"Model name {model} is not supported")
 
     return model.fit(X=data)
 
 
-def transform_factor_risk_model(risk_model, data, **kwargs):
-    transformer = FactorRiskModelTransformer()
+def generate_rolling_factor_risk_model(
+    model: str, data: pd.DataFrame, model_parameters: Dict[str, Any], **kwargs
+) -> RollingFactorRiskModel:
+    model = model.lower().replace("-", "_")
+    if model == "pca":
+        from ..statistical.pca import PCA
+
+        model = PCA(**model_parameters)
+    else:
+        raise ValueError(f"Model name {model} is not supported")
+    rolling_model = RollingFactorRiskModel(model=model, **kwargs)
+    return rolling_model.fit(X=data)
+
+
+def transform_factor_risk_model(
+    risk_model: FactorRiskModel, data: pd.DataFrame, **kwargs
+) -> FactorRiskModel:
+    transformer = FactorRiskModelTransformer(**kwargs)
     return transformer.transform(risk_model=risk_model, y=data)
 
 
@@ -90,6 +106,33 @@ def dump_factor_risk_model(
         f.write("")
 
 
+def dump_rolling_factor_risk_model(
+    rolling_risk_model: RollingFactorRiskModel,
+    success_file: str,
+    format: str,
+    parameters: Optional[Dict] = None,
+):
+    for key, model in rolling_risk_model.items():
+        if not isinstance(key, (pd.Timestamp, datetime)):
+            raise TypeError(
+                f"Key {key} type must be either datetime / Timestamp, "
+                f"rather than {key.__class__.__name__}"
+            )
+        dump_factor_risk_model(
+            risk_model=model,
+            success_file=fsjoin(
+                dirname(success_file),
+                key.isoformat(),
+                basename(success_file),
+            ),
+            format=format,
+            parameters=parameters,
+        )
+
+    with open(success_file, mode="w") as f:
+        f.write("")
+
+
 def load_factor_risk_model(
     success_file: str,
     format: str,
@@ -137,7 +180,7 @@ def where_validity(
     pd.DataFrame
       Dataframe containing the data for the given universe.
     """
-    data = data.where(validity)
+    data = data.reindex_like(validity).where(validity)
     if fillna is not None:
         data = data.fillna(fillna)
     return data

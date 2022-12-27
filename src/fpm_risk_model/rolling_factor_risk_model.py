@@ -1,6 +1,5 @@
-from typing import Optional, Union, Iterable
+from typing import Iterable, Optional
 
-import numpy as np
 import pandas as pd
 
 from .factor_risk_model import FactorRiskModel
@@ -13,7 +12,7 @@ class RollingFactorRiskModel:
 
     def __init__(
         self,
-        model: object,
+        model: FactorRiskModel,
         rolling_timeframe: int,
         show_progress: Optional[bool] = False,
         values: Optional[object] = None,

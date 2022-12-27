@@ -1,12 +1,9 @@
-from numpy import array
-import numpy as np
 import pandas as pd
-from pandas import Timestamp
-
 import pytest
+from numpy import array
 
-from fpm_risk_model.statistical import PCA
 from fpm_risk_model.rolling_factor_risk_model import RollingFactorRiskModel
+from fpm_risk_model.statistical import PCA
 
 ROLLING_TIMEFRAME = 5
 

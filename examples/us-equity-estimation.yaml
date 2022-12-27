@@ -29,14 +29,17 @@ task:
       fillna: 0.0
     output: *output-cache
   factor-risk-model:
-    caller: "fpm_risk_model.pipeline:generate_factor_risk_model"
+    caller: "fpm_risk_model.pipeline:generate_rolling_factor_risk_model"
     parameters:
       model: "pca"
+      model_parameters:
+        n_components: 20
       data: !data validity-adjusted-close-return
-      n_components: 20
+      rolling_timeframe: 252
+      show_progress: true
     output:
       name: ""
       format: "success"
-      dump-caller: "fpm_risk_model.pipeline:dump_factor_risk_model"
+      dump-caller: "fpm_risk_model.pipeline:dump_rolling_factor_risk_model"
       dump-parameters:
         format: "parquet"
