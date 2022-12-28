@@ -1,7 +1,8 @@
 from abc import ABC
 from typing import Any, Dict, Optional, Union
 
-from numpy import ndarray
+from numpy import diag_indices_from, diagonal, ndarray, sqrt, var
+from pandas import DataFrame
 
 
 class FactorRiskModel(ABC):
@@ -125,3 +126,38 @@ class FactorRiskModel(ABC):
             factor_returns=self._factor_returns.copy(),
             residual_returns=self._residual_returns.copy(),
         )
+
+    def specific_variances(self) -> ndarray:
+        """
+        Get specific variances.
+        """
+        return var(self._residual_returns)
+
+    def covariance(self):
+        """
+        Get the covariance matrix.
+        """
+        specific_variances = self.specific_variances()
+        cov = (
+            self._factor_exposures.T @ self._factor_covariances @ self._factor_exposures
+        )
+
+        if isinstance(cov, DataFrame):
+            cov.values[diag_indices_from(cov.values)] += specific_variances
+        elif isinstance(cov, ndarray):
+            cov[diag_indices_from(cov)] += specific_variances
+        else:
+            raise TypeError(
+                "Only pandas DataFrame / numpy ndarray is supported, but not "
+                f"{cov.__class__.__name__}"
+            )
+
+        return cov
+
+    def correlation(self):
+        """
+        Get the correlation matrix.
+        """
+        cov = self.covariance()
+        vol = sqrt(diagonal(cov))
+        return ((cov / vol).T / vol).T
