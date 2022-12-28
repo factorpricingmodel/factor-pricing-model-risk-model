@@ -12,8 +12,8 @@ class RollingFactorRiskModel:
 
     def __init__(
         self,
-        model: FactorRiskModel,
-        rolling_timeframe: int,
+        model: Optional[FactorRiskModel] = None,
+        rolling_timeframe: Optional[int] = None,
         show_progress: Optional[bool] = False,
         values: Optional[object] = None,
     ):
@@ -21,6 +21,12 @@ class RollingFactorRiskModel:
         self._rolling_timeframe = rolling_timeframe
         self._show_progress = show_progress
         self._values = values
+
+    def get(self, name) -> FactorRiskModel:
+        """
+        Return a factor risk model from the given name / key.
+        """
+        return self._values.get(name)
 
     def keys(self) -> Iterable[object]:
         """
@@ -51,7 +57,7 @@ class RollingFactorRiskModel:
         if self._show_progress:
             from tqdm import tqdm
 
-            iterator = tqdm(iterator)
+            iterator = tqdm(iterator, leave=False)
 
         try:
             for index in iterator:

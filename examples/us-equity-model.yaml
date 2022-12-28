@@ -14,7 +14,7 @@ task:
       directory: "{output_directory}/estimation-risk-model"
       name: ""
       format: "success"
-      load-caller: "fpm_risk_model.pipeline:load_factor_risk_model"
+      load-caller: "fpm_risk_model.pipeline:load_rolling_factor_risk_model"
       load-parameters:
         format: "parquet"
   validity:
@@ -37,13 +37,14 @@ task:
       fillna: 0.0
     output: *output-cache
   transformed-risk-model:
-    caller: "fpm_risk_model.pipeline:transform_factor_risk_model"
+    caller: "fpm_risk_model.pipeline:transform_rolling_factor_risk_model"
     parameters:
       risk_model: !data estimation-risk-model
       data: !data validity-adjusted-close-return
+      rolling_timeframe: 252
     output:
       name: ""
       format: "success"
-      dump-caller: "fpm_risk_model.pipeline:dump_factor_risk_model"
+      dump-caller: "fpm_risk_model.pipeline:dump_rolling_factor_risk_model"
       dump-parameters:
         format: "parquet"

@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from os import makedirs
 from os.path import basename, dirname
@@ -7,7 +8,10 @@ from typing import Any, Dict, Optional
 import pandas as pd
 
 from ..factor_risk_model import FactorRiskModel
-from ..factor_risk_model_transformer import FactorRiskModelTransformer
+from ..factor_risk_model_transformer import (
+    FactorRiskModelTransformer,
+    RollingFactorRiskModelTransformer,
+)
 from ..rolling_factor_risk_model import RollingFactorRiskModel
 
 
@@ -46,6 +50,18 @@ def transform_factor_risk_model(
     risk_model: FactorRiskModel, data: pd.DataFrame, **kwargs
 ) -> FactorRiskModel:
     transformer = FactorRiskModelTransformer(**kwargs)
+    return transformer.transform(risk_model=risk_model, y=data)
+
+
+def transform_rolling_factor_risk_model(
+    risk_model: RollingFactorRiskModel,
+    data: pd.DataFrame,
+    rolling_timeframe: int,
+    **kwargs,
+) -> RollingFactorRiskModel:
+    transformer = RollingFactorRiskModelTransformer(
+        rolling_timeframe=rolling_timeframe, **kwargs
+    )
     return transformer.transform(risk_model=risk_model, y=data)
 
 
@@ -111,18 +127,27 @@ def dump_rolling_factor_risk_model(
     success_file: str,
     format: str,
     parameters: Optional[Dict] = None,
+    show_progress: Optional[bool] = True,
 ):
-    for key, model in rolling_risk_model.items():
+    keys = []
+    iterator = rolling_risk_model.items()
+    if show_progress:
+        from tqdm import tqdm
+
+        iterator = tqdm(iterator, leave=False)
+    for key, model in iterator:
         if not isinstance(key, (pd.Timestamp, datetime)):
             raise TypeError(
                 f"Key {key} type must be either datetime / Timestamp, "
                 f"rather than {key.__class__.__name__}"
             )
+        key_name = key.isoformat()
+        keys.append(key_name)
         dump_factor_risk_model(
             risk_model=model,
             success_file=fsjoin(
                 dirname(success_file),
-                key.isoformat(),
+                key_name,
                 basename(success_file),
             ),
             format=format,
@@ -130,7 +155,7 @@ def dump_rolling_factor_risk_model(
         )
 
     with open(success_file, mode="w") as f:
-        f.write("")
+        json.dump({"directories": keys}, f)
 
 
 def load_factor_risk_model(
@@ -155,6 +180,48 @@ def load_factor_risk_model(
         factor_returns=factor_returns,
         factor_covariances=factor_covariances,
         residual_returns=residual_returns,
+    )
+
+
+def load_rolling_factor_risk_model(
+    success_file: str,
+    format: str,
+    parameters: Optional[Dict] = None,
+    show_progress: Optional[bool] = True,
+):
+    with open(success_file) as f:
+        metadata = json.load(f)
+    try:
+        directories = metadata["directories"]
+    except KeyError:
+        raise RuntimeError(
+            "Failed to retrieve the list of directories from "
+            f"the success file {success_file}. Please ensure "
+            "the directory was exported as rolling factor risk "
+            "model format"
+        )
+
+    if show_progress:
+        from tqdm import tqdm
+
+        directories = tqdm(directories, leave=False)
+
+    output_directory = dirname(success_file)
+    success_file_name = basename(success_file)
+    values = {}
+    for directory in directories:
+        risk_model_success_file = fsjoin(
+            output_directory,
+            directory,
+            success_file_name,
+        )
+        risk_model = load_factor_risk_model(
+            success_file=risk_model_success_file, format=format, parameters=parameters
+        )
+        values[pd.Timestamp(directory)] = risk_model
+
+    return RollingFactorRiskModel(
+        values=values,
     )
 
 

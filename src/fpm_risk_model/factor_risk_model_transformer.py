@@ -1,8 +1,11 @@
+from typing import Optional
+
 from numpy import ndarray
 from pandas import DataFrame
 
 from .factor_risk_model import FactorRiskModel
 from .regressor import WLS
+from .rolling_factor_risk_model import RollingFactorRiskModel
 
 
 class FactorRiskModelTransformer:
@@ -65,28 +68,34 @@ class RollingFactorRiskModelTransformer:
     Rolling factor risk model transformer.
     """
 
-    def __init__(self, rolling_timeframe: int, regressor=None, **kwargs):
+    def __init__(
+        self,
+        rolling_timeframe: int,
+        show_progress: Optional[bool] = True,
+        regressor=None,
+        **kwargs,
+    ):
         """
         Constructor.
         """
         self._rolling_timeframe = rolling_timeframe
+        self._show_progress = show_progress
         self._transformer = FactorRiskModelTransformer(regressor=regressor, **kwargs)
 
-    def transform(self, risk_model: object, y: ndarray) -> object:
+    def transform(
+        self, risk_model: RollingFactorRiskModel, y: ndarray
+    ) -> RollingFactorRiskModel:
         """
         Transform
         """
-        factor_returns = risk_model.factor_returns
-        if not isinstance(factor_returns, dict):
-            raise TypeError(
-                "Factor returns should be in dict type, but got "
-                f"{factor_returns.__class__.__name__}. "
-            )
-
         T = y.shape[0]
-        factor_exposures = {}
-        residual_returns = {}
-        for index in range(0, T):
+        values = {}
+        iterator = range(T)
+        if self._show_progress:
+            from tqdm import tqdm
+
+            iterator = tqdm(iterator, leave=False)
+        for index in iterator:
             start_index = index
             end_index = index + self._rolling_timeframe + 1
             if end_index > T:
@@ -95,31 +104,24 @@ class RollingFactorRiskModelTransformer:
             if isinstance(y, DataFrame):
                 y_input = y.iloc[start_index:end_index, :]
                 index_name = y.index[end_index - 1]
-            elif isinstance(y, ndarray):
-                y_input = y[start_index:end_index, :]
-                index_name = end_index - 1
+            else:
+                raise TypeError(
+                    "Only DataFrame type is supported, but not "
+                    f"{y.__class__.__name__}"
+                )
 
-            if index_name not in factor_returns:
+            if index_name not in risk_model.keys():
                 raise ValueError(
                     f"Index {index_name} cannot be found in the given "
                     "risk model. The risk model cannot be transformed "
                     "by the given returns"
                 )
 
-            index_factor_returns = factor_returns[index_name]
-            index_factor_exposures = self._regressor.fit(
-                X=index_factor_returns, y=y_input
-            )
-            index_residual_returns = (
-                y_input - index_factor_exposures.T @ index_factor_returns
+            values[index_name] = self._transformer.transform(
+                risk_model=risk_model.get(index_name),
+                y=y_input,
             )
 
-            factor_exposures[index_name] = index_factor_exposures
-            residual_returns[index_name] = index_residual_returns
-
-        return FactorRiskModel(
-            factor_exposures=factor_exposures,
-            factors_returns=factor_returns,
-            factor_covariances=risk_model.factor_covariances,
-            residual_returns=residual_returns,
+        return RollingFactorRiskModel(
+            values=values,
         )
