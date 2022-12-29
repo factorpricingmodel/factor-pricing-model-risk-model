@@ -2,7 +2,10 @@ from numpy import array, nan
 from pandas import Series
 from pandas.testing import assert_series_equal
 
-from fpm_risk_model.accuracy.bias import compute_standardized_returns
+from fpm_risk_model.accuracy.bias import (
+    compute_bias_statistics,
+    compute_standardized_returns,
+)
 
 
 def test_compute_standardized_returns(
@@ -18,3 +21,18 @@ def test_compute_standardized_returns(
         index=list(rolling_factor_risk_model.keys()),
     )
     assert_series_equal(standardized_returns, expected_standardized_returns)
+
+
+def test_compute_bias_statistics(daily_returns, weights, rolling_factor_risk_model):
+    bias_statistics = compute_bias_statistics(
+        X=daily_returns,
+        weights=weights,
+        rolling_risk_model=rolling_factor_risk_model,
+        rolling_timeframe=5,
+        min_periods=0,
+    )
+    expected_bias_statistics = Series(
+        array([nan, nan, 1.8305485, 1.47255984, 1.31524515]),
+        index=list(rolling_factor_risk_model.keys()),
+    )
+    assert_series_equal(expected_bias_statistics, bias_statistics)
