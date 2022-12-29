@@ -169,3 +169,21 @@ def test_pca_pd(
             columns=pca.factor_covariances.columns,
         ),
     )
+
+
+@pytest.mark.parametrize("speedup", [False, True])
+def test_pca_same_covariances(
+    daily_returns_pd,
+    speedup,
+):
+    """
+    Covariances should be the same if the number of components
+    is same as the rank of the daily returns.
+    """
+    factor_risk_model = PCA(n_components=3, speedup=speedup)
+    factor_risk_model.fit(X=daily_returns_pd)
+    expected_covariances = daily_returns_pd.cov()
+    pd.testing.assert_frame_equal(
+        expected_covariances,
+        factor_risk_model.cov().fillna(0.0),
+    )

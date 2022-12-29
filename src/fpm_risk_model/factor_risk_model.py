@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import Any, Dict, Optional, Union
 
-from numpy import diag_indices_from, diagonal, ndarray, sqrt, var
+from numpy import all, diag_indices_from, diagonal, nan, ndarray, sqrt, var
 from pandas import DataFrame
 
 
@@ -127,13 +127,21 @@ class FactorRiskModel(ABC):
             residual_returns=self._residual_returns.copy(),
         )
 
-    def specific_variances(self) -> ndarray:
+    def specific_variances(self, ddof=1) -> ndarray:
         """
         Get specific variances.
         """
-        return var(self._residual_returns)
+        if isinstance(self._residual_returns, ndarray):
+            return var(self._residual_returns, axis=0, ddof=ddof)
+        elif isinstance(self._residual_returns, DataFrame):
+            return self._residual_returns.var(ddof=ddof)
 
-    def covariance(self):
+        raise TypeError(
+            "Only pandas DataFrame / numpy ndarray is supported, but not "
+            f"{self._residual_returns.__class__.__name__}"
+        )
+
+    def cov(self):
         """
         Get the covariance matrix.
         """
@@ -143,21 +151,29 @@ class FactorRiskModel(ABC):
         )
 
         if isinstance(cov, DataFrame):
-            cov.values[diag_indices_from(cov.values)] += specific_variances
+            cov_values = cov.values
         elif isinstance(cov, ndarray):
-            cov[diag_indices_from(cov)] += specific_variances
+            cov_values = cov
         else:
             raise TypeError(
                 "Only pandas DataFrame / numpy ndarray is supported, but not "
                 f"{cov.__class__.__name__}"
             )
 
+        # Add the specific variances into the covariance matrix
+        cov_values[diag_indices_from(cov_values)] += specific_variances
+
+        # Set zero covariance instruments to nan
+        nan_instruments = all(cov_values == 0.0, axis=0)
+        cov_values[nan_instruments, :] = nan
+        cov_values[:, nan_instruments] = nan
+
         return cov
 
-    def correlation(self):
+    def corr(self):
         """
         Get the correlation matrix.
         """
-        cov = self.covariance()
+        cov = self.cov()
         vol = sqrt(diagonal(cov))
         return ((cov / vol).T / vol).T

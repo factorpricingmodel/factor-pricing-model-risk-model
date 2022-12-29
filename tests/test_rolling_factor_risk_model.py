@@ -241,7 +241,7 @@ def expected_factor_covariances(dates, factors):
     }
 
 
-def test_rolling_pca_np(
+def test_rolling_factor_risk_model(
     daily_returns,
     expected_factor_exposures,
     expected_factor_returns,
