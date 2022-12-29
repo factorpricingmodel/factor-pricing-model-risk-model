@@ -41,7 +41,7 @@ class FactorRiskModelTransformer:
             y_input = y.values
 
         factor_exposures = self._regressor.fit(X=X, y=y_input)
-        residual_returns = y_input - X @ B
+        residual_returns = y_input - X @ factor_exposures
 
         if isinstance(factor_returns, DataFrame):
             factor_exposures = DataFrame(
