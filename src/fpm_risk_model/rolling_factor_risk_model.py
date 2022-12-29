@@ -1,6 +1,7 @@
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Tuple
 
 import pandas as pd
+from pandas import Timestamp
 
 from .factor_risk_model import FactorRiskModel
 
@@ -40,7 +41,7 @@ class RollingFactorRiskModel:
         """
         return self._values.values()
 
-    def items(self) -> Iterable[object]:
+    def items(self) -> Iterable[Tuple[Timestamp, FactorRiskModel]]:
         """
         Return a list of tuples with keys and values.
         """
