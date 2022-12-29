@@ -1,9 +1,8 @@
-import pytest
-
-from numpy import array, nan
 import numpy as np
-from pandas import DataFrame
 import pandas as pd
+import pytest
+from numpy import array, nan
+from pandas import DataFrame
 
 from fpm_risk_model.factor_risk_model import FactorRiskModel
 
