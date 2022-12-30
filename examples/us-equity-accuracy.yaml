@@ -1,0 +1,66 @@
+metadata:
+  output:
+    directory: "{output_directory}/model-accuracy"
+definitions:
+  output-cache: &output-cache
+    directory: null
+  output-parquet: &output-parquet
+    format: "parquet"
+    dump-caller: "object.to_parquet"
+    load-caller: "pandas:read_parquet"
+task:
+  model-risk-model:
+    output:
+      directory: "{output_directory}/model-risk-model"
+      name: ""
+      format: "success"
+      load-caller: "fpm_risk_model.pipeline:load_rolling_factor_risk_model"
+      load-parameters:
+        format: "parquet"
+  validity:
+    output:
+      directory: "{output_directory}/model-universe"
+      <<: *output-parquet
+  adjusted-close:
+    output:
+      directory: "{output_directory}/xs_data"
+      <<: *output-parquet
+  adjusted-close-return:
+    object: !data adjusted-close
+    caller: "object.pct_change"
+    output: *output-cache
+  equal-weights:
+    caller: "fpm_risk_model.pipeline.portfolio:equal_weighted_portfolio"
+    parameters:
+      validity: !data validity
+    output: *output-cache
+  forecast-return:
+    caller: "fpm_risk_model.pipeline.returns:get_forecast_returns"
+    parameters:
+      X: !data adjusted-close-return
+      forecast_timeframe: 3
+      min_periods: 0
+    output: *output-cache
+  validity-forecast-return:
+    caller: "fpm_risk_model.pipeline:where_validity"
+    parameters:
+      validity: !data validity
+      data: !data forecast-return
+      fillna: 0.0
+    output: *output-cache
+  bias-statistics:
+    caller: "fpm_risk_model.accuracy.bias:compute_bias_statistics"
+    parameters:
+      X: !data validity-forecast-return
+      weights: !data equal-weights
+      rolling_risk_model: !data model-risk-model
+      rolling_timeframe: 36
+      min_periods: 20
+    output: *output-cache
+  bias-statistics/output:
+    caller: "object.to_frame"
+    object: !data bias-statistics
+    parameters: ["bias_statistics"]
+    output:
+      <<: *output-parquet
+      name: "bias-statistics"
