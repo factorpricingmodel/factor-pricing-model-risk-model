@@ -38,15 +38,14 @@ task:
     caller: "fpm_risk_model.pipeline.returns:get_forecast_returns"
     parameters:
       X: !data adjusted-close-return
-      forecast_timeframe: 3
-      min_periods: 0
+      forecast_timeframe: 1
+      min_periods: 1
     output: *output-cache
   validity-forecast-return:
     caller: "fpm_risk_model.pipeline:where_validity"
     parameters:
       validity: !data validity
       data: !data forecast-return
-      fillna: 0.0
     output: *output-cache
   bias-statistics:
     caller: "fpm_risk_model.accuracy.bias:compute_bias_statistics"

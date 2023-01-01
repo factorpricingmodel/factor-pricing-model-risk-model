@@ -28,5 +28,5 @@ def get_forecast_returns(
     return (
         X.rolling(forecast_timeframe, min_periods=min_periods)
         .mean()
-        .shift(forecast_timeframe)
+        .shift(-forecast_timeframe)
     )
