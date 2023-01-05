@@ -35,7 +35,7 @@ task:
       validity: !data validity
     output: *output-cache
   forecast-return:
-    caller: "fpm_risk_model.pipeline.returns:get_forecast_returns"
+    caller: "fpm_risk_model.pipeline.returns:compute_forecast_returns"
     parameters:
       X: !data adjusted-close-return
       forecast_timeframe: 1
