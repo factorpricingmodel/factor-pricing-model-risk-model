@@ -1,11 +1,12 @@
-from abc import ABC
 from typing import Any, Dict, Optional, Union
 
-from numpy import all, diag_indices_from, diagonal, nan, ndarray, sqrt, var
+from numpy import all, diag_indices_from, nan, ndarray, var
 from pandas import DataFrame
 
+from .risk_model import RiskModel
 
-class FactorRiskModel(ABC):
+
+class FactorRiskModel(RiskModel):
     """
     Factor Risk Model.
 
@@ -26,6 +27,7 @@ class FactorRiskModel(ABC):
 
     def __init__(
         self,
+        engine: Optional[Any] = None,
         factor_exposures: Optional[Union[ndarray, Dict[Any, ndarray]]] = None,
         factor_returns: Optional[Union[ndarray, Dict[Any, ndarray]]] = None,
         factor_covariances: Optional[Union[ndarray, Dict[Any, ndarray]]] = None,
@@ -45,6 +47,7 @@ class FactorRiskModel(ABC):
         residual_returns : Optional[Union[ndarray, Dict[Any, ndarray]]]
           Residual returns of the factor risk model.
         """
+        super().__init__(engine=engine)
         self._factor_exposures = factor_exposures
         self._factor_returns = factor_returns
         self._factor_covariances = factor_covariances
@@ -169,11 +172,3 @@ class FactorRiskModel(ABC):
         cov_values[:, nan_instruments] = nan
 
         return cov
-
-    def corr(self):
-        """
-        Get the correlation matrix.
-        """
-        cov = self.cov()
-        vol = sqrt(diagonal(cov))
-        return ((cov / vol).T / vol).T
