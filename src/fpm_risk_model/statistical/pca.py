@@ -14,6 +14,7 @@ class PCA(FactorRiskModel):
         n_components: int,
         demean: Optional[bool] = True,
         speedup: Optional[bool] = True,
+        **kwargs,
     ):
         """
         Constructor.
@@ -28,7 +29,7 @@ class PCA(FactorRiskModel):
           Indicate whether to speed up the computation as much as possible.
           Default is True.
         """
-        super().__init__()
+        super().__init__(**kwargs)
         self._n_components = n_components
         self._demean = demean
         self._speedup = speedup

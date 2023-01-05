@@ -12,7 +12,7 @@ class RiskModel(ABC):
     related metrics.
     """
 
-    def __init__(self, engine: Any = None):
+    def __init__(self, engine: Any = None, show_all_instruments: bool = False):
         """
         Constructor.
 
@@ -22,6 +22,7 @@ class RiskModel(ABC):
             Engine used in computation.
         """
         self._engine = engine or NumpyEngine
+        self._show_all_instruments = show_all_instruments
 
     @abstractmethod
     def cov(self):

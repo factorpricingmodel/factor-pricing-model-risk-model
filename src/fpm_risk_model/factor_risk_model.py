@@ -1,6 +1,6 @@
 from typing import Any, Dict, Optional, Union
 
-from numpy import all, diag_indices_from, nan, ndarray, var
+from numpy import any, diag_indices_from, nan, ndarray, var
 from pandas import DataFrame
 
 from .risk_model import RiskModel
@@ -27,11 +27,11 @@ class FactorRiskModel(RiskModel):
 
     def __init__(
         self,
-        engine: Optional[Any] = None,
         factor_exposures: Optional[Union[ndarray, Dict[Any, ndarray]]] = None,
         factor_returns: Optional[Union[ndarray, Dict[Any, ndarray]]] = None,
         factor_covariances: Optional[Union[ndarray, Dict[Any, ndarray]]] = None,
         residual_returns: Optional[Union[ndarray, Dict[Any, ndarray]]] = None,
+        **kwargs,
     ):
         """
         Constructor
@@ -47,11 +47,12 @@ class FactorRiskModel(RiskModel):
         residual_returns : Optional[Union[ndarray, Dict[Any, ndarray]]]
           Residual returns of the factor risk model.
         """
-        super().__init__(engine=engine)
+        super().__init__(**kwargs)
         self._factor_exposures = factor_exposures
         self._factor_returns = factor_returns
         self._factor_covariances = factor_covariances
         self._residual_returns = residual_returns
+        self._kwargs = kwargs
 
     @property
     def factor_exposures(self) -> Union[ndarray, Dict[Any, ndarray]]:
@@ -128,6 +129,7 @@ class FactorRiskModel(RiskModel):
             factor_covariances=self._factor_covariances.copy(),
             factor_returns=self._factor_returns.copy(),
             residual_returns=self._residual_returns.copy(),
+            **self._kwargs,
         )
 
     def specific_variances(self, ddof=1) -> ndarray:
@@ -148,13 +150,14 @@ class FactorRiskModel(RiskModel):
         """
         Get the covariance matrix.
         """
-        specific_variances = self.specific_variances()
         cov = (
             self._factor_exposures.T @ self._factor_covariances @ self._factor_exposures
         )
+        specific_variances = self.specific_variances()
 
         if isinstance(cov, DataFrame):
             cov_values = cov.values
+            specific_variances = specific_variances.loc[cov.index]
         elif isinstance(cov, ndarray):
             cov_values = cov
         else:
@@ -166,9 +169,20 @@ class FactorRiskModel(RiskModel):
         # Add the specific variances into the covariance matrix
         cov_values[diag_indices_from(cov_values)] += specific_variances
 
-        # Set zero covariance instruments to nan
-        nan_instruments = all(cov_values == 0.0, axis=0)
-        cov_values[nan_instruments, :] = nan
-        cov_values[:, nan_instruments] = nan
+        valid_instruments = any(cov_values != 0.0, axis=0)
+
+        if self._show_all_instruments:
+            # Set zero covariance instruments to nan
+            cov_values[~valid_instruments, :] = nan
+            cov_values[:, ~valid_instruments] = nan
+        elif isinstance(cov, DataFrame):
+            cov = cov.loc[valid_instruments, valid_instruments]
+        elif isinstance(cov, ndarray):
+            cov = cov[valid_instruments, :][:, valid_instruments]
+        else:
+            raise TypeError(
+                "Only pandas DataFrame / numpy ndarray is supported, but not "
+                f"{cov.__class__.__name__}"
+            )
 
         return cov

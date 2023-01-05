@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pytest
-from numpy import array, nan
+from numpy import array
 from pandas import DataFrame
 
 from fpm_risk_model.factor_risk_model import FactorRiskModel
@@ -10,6 +10,11 @@ from fpm_risk_model.factor_risk_model import FactorRiskModel
 @pytest.fixture(scope="module")
 def instruments():
     return ["A", "AAL", "AAP", "AAPL"]
+
+
+@pytest.fixture(scope="module")
+def valid_instruments():
+    return ["A", "AAL", "AAPL"]
 
 
 @pytest.fixture(scope="module")
@@ -138,10 +143,9 @@ def factor_risk_model_pd(
 def expected_covariances():
     return array(
         [
-            [0.00038113, 0.00039798, nan, 0.0002858],
-            [0.00039798, 0.00068043, nan, 0.00032631],
-            [nan, nan, nan, nan],
-            [0.0002858, 0.00032631, nan, 0.00048932],
+            [0.00038113, 0.00039798, 0.0002858],
+            [0.00039798, 0.00068043, 0.00032631],
+            [0.0002858, 0.00032631, 0.00048932],
         ]
     )
 
@@ -150,10 +154,9 @@ def expected_covariances():
 def expected_correlations():
     return array(
         [
-            [1.0, 0.78151541, nan, 0.66179042],
-            [0.78151541, 1.0, nan, 0.56551526],
-            [nan, nan, nan, nan],
-            [0.66179042, 0.56551526, nan, 1.0],
+            [1.0, 0.78151541, 0.66179042],
+            [0.78151541, 1.0, 0.56551526],
+            [0.66179042, 0.56551526, 1.0],
         ]
     )
 
@@ -169,11 +172,11 @@ def test_factor_risk_model_np_correlations(factor_risk_model_np, expected_correl
 
 
 def test_factor_risk_model_pd_covariances(
-    factor_risk_model_pd, expected_covariances, instruments
+    factor_risk_model_pd, expected_covariances, valid_instruments
 ):
     cov = factor_risk_model_pd.cov()
     expected_covariances = pd.DataFrame(
-        expected_covariances, index=instruments, columns=instruments
+        expected_covariances, index=valid_instruments, columns=valid_instruments
     )
     pd.testing.assert_frame_equal(
         cov,
@@ -182,10 +185,10 @@ def test_factor_risk_model_pd_covariances(
 
 
 def test_factor_risk_model_pd_correlations(
-    factor_risk_model_pd, expected_correlations, instruments
+    factor_risk_model_pd, expected_correlations, valid_instruments
 ):
     corr = factor_risk_model_pd.corr()
     expected_correlations = pd.DataFrame(
-        expected_correlations, index=instruments, columns=instruments
+        expected_correlations, index=valid_instruments, columns=valid_instruments
     )
     pd.testing.assert_frame_equal(corr, expected_correlations)

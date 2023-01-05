@@ -180,7 +180,7 @@ def test_pca_same_covariances(
     Covariances should be the same if the number of components
     is same as the rank of the daily returns.
     """
-    factor_risk_model = PCA(n_components=3, speedup=speedup)
+    factor_risk_model = PCA(n_components=3, speedup=speedup, show_all_instruments=True)
     factor_risk_model.fit(X=daily_returns_pd)
     expected_covariances = daily_returns_pd.cov()
     pd.testing.assert_frame_equal(
