@@ -19,6 +19,14 @@ usage
 :maxdepth: 2
 
 statistical
+covariance
+```
+
+```{toctree}
+:caption: Accuracy
+:maxdepth: 2
+
+accuracy
 ```
 
 ```{toctree}

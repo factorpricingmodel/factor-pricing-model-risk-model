@@ -47,3 +47,42 @@ run the pipelines interactively in Jupyter Notebook.
 ```python
 import fpm_risk_model
 ```
+
+## Objective
+
+The project contains standardised functions and pipelines for
+researchers and fund managers to create "enterprise-level-like"
+risk model.
+
+## Features
+
+Basically, there are three major features provided in the library
+
+- Factor risk model creation
+- Covariance estimator
+- Tracking risk model accuracy
+
+## Factor risk model
+
+The factor risk model is created by fitting instrument returns (which
+could be weekly, daily, or even higher granularity) and other related
+parameters into the model, and its products are factor exposures,
+factor returns, factor covariances, and residual returns (idiosyncratic
+returns).
+
+For example, to create a simple statistical PCA risk model,
+
+```
+from fpm_risk_model.statistics import PCA
+
+risk_model = PCA(n_components=5)
+risk_model.fit(X=returns)
+
+# Get fitted factor exposures
+risk_model.factor_exposures
+```
+
+## Contribution
+
+All levels of contributions are welcomed. Please refer to the [contributing](https://factor-pricing-model-risk-model.readthedocs.io/en/latest/contributing.html)
+section for development and release guidelines.
