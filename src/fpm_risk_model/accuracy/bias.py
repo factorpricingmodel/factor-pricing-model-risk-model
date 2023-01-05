@@ -1,6 +1,6 @@
 from typing import Optional
 
-from numpy import sqrt, sum
+from numpy import nan, sqrt, sum
 from pandas import DataFrame, Series
 
 from ..rolling_factor_risk_model import RollingFactorRiskModel
@@ -36,14 +36,16 @@ def compute_standardized_returns(
     Series
         A timeseries of standardized returns.
     """
-    b_t = Series()
+    b_t = Series(nan, index=weights.index)
     instruments = weights.columns
-    for index, risk_model in rolling_risk_model.items():
-        index_weights = weights.loc[index, :]
+    for index, index_weights in weights.iterrows():
         returns = sum(X.loc[index, instruments] * index_weights)
         if forecast_vols is not None:
             vol = forecast_vols.loc[index]
         else:
+            risk_model = rolling_risk_model.get(index)
+            if risk_model is None:
+                continue
             cov = (
                 risk_model.cov()
                 .reindex(index=instruments, columns=instruments)

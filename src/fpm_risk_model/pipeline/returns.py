@@ -3,7 +3,7 @@ from typing import Optional, Union
 from pandas import DataFrame, Series
 
 
-def get_forecast_returns(
+def compute_forecast_returns(
     X: Union[DataFrame, Series],
     forecast_timeframe: int,
     min_periods: Optional[int] = None,

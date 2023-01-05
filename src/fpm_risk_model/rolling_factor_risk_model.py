@@ -23,11 +23,11 @@ class RollingFactorRiskModel:
         self._show_progress = show_progress
         self._values = values
 
-    def get(self, name) -> FactorRiskModel:
+    def get(self, name, **kwargs) -> FactorRiskModel:
         """
         Return a factor risk model from the given name / key.
         """
-        return self._values.get(name)
+        return self._values.get(name, **kwargs)
 
     def keys(self) -> Iterable[object]:
         """

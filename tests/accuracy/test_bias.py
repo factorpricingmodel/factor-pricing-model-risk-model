@@ -17,8 +17,21 @@ def test_compute_standardized_returns(
         rolling_risk_model=rolling_factor_risk_model,
     )
     expected_standardized_returns = Series(
-        array([nan, 0.87928191, -1.7095046, 0.80100368, -1.0760382]),
-        index=list(rolling_factor_risk_model.keys()),
+        array(
+            [
+                nan,
+                nan,
+                nan,
+                nan,
+                nan,
+                nan,
+                0.87928191,
+                -1.7095046,
+                0.80100368,
+                -1.0760382,
+            ]
+        ),
+        index=weights.index,
     )
     assert_series_equal(standardized_returns, expected_standardized_returns)
 
@@ -32,7 +45,7 @@ def test_compute_bias_statistics(daily_returns, weights, rolling_factor_risk_mod
         min_periods=0,
     )
     expected_bias_statistics = Series(
-        array([nan, nan, 1.8305485, 1.47255984, 1.31524515]),
-        index=list(rolling_factor_risk_model.keys()),
+        array([nan, nan, nan, nan, nan, nan, nan, 1.8305485, 1.47255984, 1.31524515]),
+        index=weights.index,
     )
     assert_series_equal(expected_bias_statistics, bias_statistics)
