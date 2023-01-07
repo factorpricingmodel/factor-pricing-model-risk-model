@@ -18,8 +18,10 @@ usage
 :caption: Risk Model
 :maxdepth: 2
 
-statistical
-covariance
+risk_model/universe
+risk_model/risk_model
+risk_model/statistical
+risk_model/covariance
 ```
 
 ```{toctree}

@@ -28,3 +28,10 @@ $$
 
 where $W$ is the weight matrix in regression, e.g. an identity matrix in ordinary
 weighted least-squares.
+
+## Definition
+
+```{eval-rst}
+.. automodule:: fpm_risk_model.statistical.pca
+  :members:
+```

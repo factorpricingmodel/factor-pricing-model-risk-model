@@ -20,6 +20,11 @@ class RiskModel(ABC):
         ----------
         engine : Engine object.
             Engine used in computation.
+
+        show_all_instruments : bool.
+            Indicate whether to show all instruments. Default is False.
+            If True, the instruments outside of the universe in each
+            period may not be filtered out.
         """
         self._engine = engine or NumpyEngine
         self._show_all_instruments = show_all_instruments
@@ -28,11 +33,23 @@ class RiskModel(ABC):
     def cov(self):
         """
         Get the covariance matrix.
+
+        Returns
+        -------
+        numpy.ndarray
+            A square pairwise covariance matrix which its
+            diagonal entries are the variances.
         """
 
     def corr(self):
         """
         Get the correlation matrix.
+
+        Returns
+        -------
+        numpy.ndarray
+            A square pairwise correlation matrix which its
+            diagonal entries are all ones.
         """
         cov = self.cov()
         vol = self._engine.sqrt(self._engine.diagonal(cov))

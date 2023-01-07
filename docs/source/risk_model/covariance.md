@@ -1,4 +1,4 @@
-# Covariance estimator
+# Covariance Estimator
 
 For the factor risk model, the covariance is computed by
 
