@@ -37,11 +37,10 @@ task:
       fillna: 0.0
     output: *output-cache
   transformed-risk-model:
-    caller: "fpm_risk_model.pipeline:transform_rolling_factor_risk_model"
+    object: !data estimation-risk-model
+    caller: "object.transform"
     parameters:
-      risk_model: !data estimation-risk-model
-      data: !data validity-adjusted-close-return
-      rolling_timeframe: 252
+      y: !data validity-adjusted-close-return
     output:
       name: ""
       format: "success"

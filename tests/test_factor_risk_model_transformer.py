@@ -4,7 +4,6 @@ import pytest
 from numpy import array
 
 from fpm_risk_model.factor_risk_model import FactorRiskModel
-from fpm_risk_model.factor_risk_model_transformer import FactorRiskModelTransformer
 
 
 @pytest.fixture(scope="module")
@@ -110,11 +109,8 @@ def factor_risk_model(
     )
 
 
-def test_factor_risk_model_transformer(daily_returns_np, factor_risk_model):
-    transformer = FactorRiskModelTransformer()
-    transformed_model = transformer.transform(
-        y=daily_returns_np, risk_model=factor_risk_model
-    )
+def test_factor_risk_model_transform(daily_returns_np, factor_risk_model):
+    transformed_model = factor_risk_model.transform(y=daily_returns_np)
 
     # No change on factor returns and factor covariances
     np.testing.assert_almost_equal(

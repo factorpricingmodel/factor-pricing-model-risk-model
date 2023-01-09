@@ -3,6 +3,7 @@ from typing import Any, Dict, Optional, Union
 from numpy import any, diag_indices_from, nan, ndarray, var
 from pandas import DataFrame
 
+from .regressor import WLS
 from .risk_model import RiskModel
 
 
@@ -123,6 +124,11 @@ class FactorRiskModel(RiskModel):
     def copy(self) -> object:
         """
         Copy the model.
+
+        Returns
+        -------
+        object
+          Copy of the model.
         """
         return FactorRiskModel(
             factor_exposures=self._factor_exposures.copy(),
@@ -135,6 +141,16 @@ class FactorRiskModel(RiskModel):
     def specific_variances(self, ddof=1) -> ndarray:
         """
         Get specific variances.
+
+        Parameters
+        ----------
+        ddof : int
+          Degrees of freedom.
+
+        Returns
+        ----
+        ndarray
+          Specific variances of the instruments.
         """
         if isinstance(self._residual_returns, ndarray):
             return var(self._residual_returns, axis=0, ddof=ddof)
@@ -146,9 +162,82 @@ class FactorRiskModel(RiskModel):
             f"{self._residual_returns.__class__.__name__}"
         )
 
-    def cov(self):
+    def transform(self, y: ndarray, regressor: Optional[object] = None) -> object:
+        """
+        Transform the factor risk model.
+
+        The method is used to transform the factor risk model by
+        passing another set of returns. Most of the time, the
+        factor risk model is fitted by the estimation universe,
+        and then transformed by the model universe.
+
+        Parameters
+        ----------
+        y : ndarray
+            The instrument returns.
+
+        regressor : object, default=None
+            Regressor to transform the input y into factor exposures.
+            If None, the regressor is set to the default WLS.
+
+        Returns
+        -------
+        ndarray
+            The transformed factor risk model.
+        """
+        X = self.factor_returns
+        if not isinstance(X, (ndarray, DataFrame)):
+            raise TypeError(
+                "Factor returns should be in numpy ndarray type, but got "
+                f"{X.__class__.__name__}. If it is a rolling "
+                "risk model, please use `RollingFactorRiskModelTransformer` "
+                "instead"
+            )
+
+        # Convert the factor returns into a ndarray first
+        if isinstance(X, DataFrame):
+            X = X.values
+
+        # Convert the y input to a ndarray first
+        y_input = y
+        if isinstance(y, DataFrame):
+            y_input = y.values
+
+        # Set the default regressor
+        regressor = regressor or WLS()
+
+        # Transform the factor exposures from the y input
+        factor_exposures = regressor.fit(X=X, y=y_input)
+        residual_returns = y_input - X @ factor_exposures
+
+        if isinstance(self.factor_returns, DataFrame):
+            factor_exposures = DataFrame(
+                factor_exposures,
+                index=self.factor_exposures.index,
+                columns=y.columns,
+            )
+            residual_returns = DataFrame(
+                residual_returns,
+                index=y.index,
+                columns=y.columns,
+            )
+
+        return FactorRiskModel(
+            factor_exposures=factor_exposures,
+            factor_returns=self.factor_returns.copy(),
+            factor_covariances=self.factor_covariances.copy(),
+            residual_returns=residual_returns,
+        )
+
+    def cov(self) -> ndarray:
         """
         Get the covariance matrix.
+
+        Returns
+        -------
+        numpy.ndarray
+            A square pairwise covariance matrix which its
+            diagonal entries are the variances.
         """
         cov = (
             self._factor_exposures.T @ self._factor_covariances @ self._factor_exposures

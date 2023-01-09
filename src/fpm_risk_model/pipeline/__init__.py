@@ -8,10 +8,6 @@ from typing import Any, Dict, Optional
 import pandas as pd
 
 from ..factor_risk_model import FactorRiskModel
-from ..factor_risk_model_transformer import (
-    FactorRiskModelTransformer,
-    RollingFactorRiskModelTransformer,
-)
 from ..rolling_factor_risk_model import RollingFactorRiskModel
 
 
@@ -44,25 +40,6 @@ def generate_rolling_factor_risk_model(
         raise ValueError(f"Model name {model} is not supported")
     rolling_model = RollingFactorRiskModel(model=model, **kwargs)
     return rolling_model.fit(X=data)
-
-
-def transform_factor_risk_model(
-    risk_model: FactorRiskModel, data: pd.DataFrame, **kwargs
-) -> FactorRiskModel:
-    transformer = FactorRiskModelTransformer(**kwargs)
-    return transformer.transform(risk_model=risk_model, y=data)
-
-
-def transform_rolling_factor_risk_model(
-    risk_model: RollingFactorRiskModel,
-    data: pd.DataFrame,
-    rolling_timeframe: int,
-    **kwargs,
-) -> RollingFactorRiskModel:
-    transformer = RollingFactorRiskModelTransformer(
-        rolling_timeframe=rolling_timeframe, **kwargs
-    )
-    return transformer.transform(risk_model=risk_model, y=data)
 
 
 def dump_factor_risk_model(

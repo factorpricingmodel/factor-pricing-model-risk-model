@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+from numpy import ndarray
+
 from .engine import NumpyEngine
 
 
@@ -30,7 +32,7 @@ class RiskModel(ABC):
         self._show_all_instruments = show_all_instruments
 
     @abstractmethod
-    def cov(self):
+    def cov(self) -> ndarray:
         """
         Get the covariance matrix.
 

@@ -1,7 +1,7 @@
 from typing import Iterable, Optional, Tuple
 
 import pandas as pd
-from pandas import Timestamp
+from pandas import DataFrame, Timestamp
 
 from .factor_risk_model import FactorRiskModel
 
@@ -47,7 +47,7 @@ class RollingFactorRiskModel:
         """
         return self._values.items()
 
-    def fit(self, X) -> object:
+    def fit(self, X: DataFrame) -> object:
         """
         Fit the model.
         """
@@ -80,3 +80,80 @@ class RollingFactorRiskModel:
 
         self._values = values
         return self
+
+    def transform(
+        self,
+        y: DataFrame,
+        regressor: Optional[object] = None,
+        rolling_timeframe: Optional[int] = None,
+    ) -> object:
+        """
+        Transform the rolling factor risk model.
+
+        The method is used to transform the rolling factor risk model by
+        passing another set of returns. Most of the time, the
+        factor risk model is fitted by the estimation universe,
+        and then transformed by the model universe.
+
+        Parameters
+        ----------
+        y : ndarray
+            The instrument returns.
+
+        regressor : object, default=None
+            Regressor to transform the input y into factor exposures.
+            If None, the regressor is set to the default WLS.
+
+        rolling_timeframe : int, default=None
+            The rolling timeframe.
+
+        Returns
+        -------
+        object
+            The transformed rolling factor risk model.
+        """
+        if not isinstance(y, DataFrame):
+            raise TypeError(
+                "Only DataFrame type is supported, but not " f"{y.__class__.__name__}"
+            )
+
+        rolling_timeframe = rolling_timeframe or self._rolling_timeframe
+        if not rolling_timeframe:
+            raise ValueError(
+                f"Rolling timeframe must be specified, but not {rolling_timeframe}"
+            )
+
+        T = y.shape[0]
+        values = {}
+        iterator = range(T)
+        if self._show_progress:
+            from tqdm import tqdm
+
+            iterator = tqdm(iterator, leave=False)
+
+        for index in iterator:
+            start_index = index
+            end_index = index + rolling_timeframe + 1
+            if end_index > T:
+                break
+
+            y_input = y.iloc[start_index:end_index, :]
+            index_name = y.index[end_index - 1]
+
+            if index_name not in self.keys():
+                raise ValueError(
+                    f"Index {index_name} cannot be found in the given "
+                    "risk model. The risk model cannot be transformed "
+                    "by the given returns"
+                )
+
+            risk_model = self.get(index_name)
+            values[index_name] = risk_model.transform(
+                y=y_input,
+                regressor=regressor,
+            )
+
+        return RollingFactorRiskModel(
+            values=values,
+            rolling_timeframe=rolling_timeframe,
+        )
