@@ -1,4 +1,4 @@
-# Factor risk model
+# Factor Risk Model
 
 A factor risk model is a statistical model that is used to quantify the risk of an investment or portfolio. It takes into account one or more risk factors, or variables that are known to affect the risk of the investment. The model aims to identify the factors that contribute to risk and to measure their impact on the investment's return.
 
