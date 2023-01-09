@@ -28,10 +28,10 @@ class FactorRiskModel(RiskModel):
 
     def __init__(
         self,
-        factor_exposures: Optional[Union[ndarray, Dict[Any, ndarray]]] = None,
-        factor_returns: Optional[Union[ndarray, Dict[Any, ndarray]]] = None,
-        factor_covariances: Optional[Union[ndarray, Dict[Any, ndarray]]] = None,
-        residual_returns: Optional[Union[ndarray, Dict[Any, ndarray]]] = None,
+        factor_exposures: ndarray = None,
+        factor_returns: ndarray = None,
+        factor_covariances: ndarray = None,
+        residual_returns: ndarray = None,
         **kwargs,
     ):
         """
@@ -39,13 +39,13 @@ class FactorRiskModel(RiskModel):
 
         Parameters
         ----------
-        factor_exposures : Optional[Union[ndarray, Dict[Any, ndarray]]
+        factor_exposures : ndarray
           Factor exposures of the factor risk model.
-        factors_returns : Optional[Union[ndarray, Dict[Any, ndarray]]]
+        factors_returns : ndarray
           Factor returns of the factor risk model.
-        factor_covariances : Optional[Union[ndarray, Dict[Any, ndarray]]]
+        factor_covariances : ndarray
           Factor covariances of the factor risk model.
-        residual_returns : Optional[Union[ndarray, Dict[Any, ndarray]]]
+        residual_returns : ndarray
           Residual returns of the factor risk model.
         """
         super().__init__(**kwargs)
@@ -56,17 +56,15 @@ class FactorRiskModel(RiskModel):
         self._kwargs = kwargs
 
     @property
-    def factor_exposures(self) -> Union[ndarray, Dict[Any, ndarray]]:
+    def factor_exposures(self) -> ndarray:
         """
         Return the factor exposures.
 
         Return
         ------
-        Union[ndarray, Dict[Any, ndarray]]
+        ndarray
           Matrix in dimension (n, N) where N is the number of
-          instruments and n is the number of components in PCA,
-          or a dictionary of which its values are matrices in
-          the mentioned format.
+          instruments and n is the number of factors.
         """
         return self._factor_exposures
 
@@ -77,11 +75,9 @@ class FactorRiskModel(RiskModel):
 
         Return
         ------
-        Union[ndarray, Dict[Any, ndarray]]
+        ndarray
           Matrix in dimension (T, n) where n is the number of
-          components in PCA and T is the number of time frames,
-          or a dictionary of which its values are matrices in
-          the mentioned format.
+          factors and T is the number of time frames.
         """
         return self._factor_returns
 
@@ -92,11 +88,9 @@ class FactorRiskModel(RiskModel):
 
         Return
         ------
-        Union[ndarray, Dict[Any, ndarray]]
+        ndarray
           Matrix in dimension (n, n) where n is the number of
-          components in PCA,
-          or a dictionary of which its values are matrices in
-          the mentioned format.
+          factors.
         """
         return self._factor_covariances
 
@@ -107,11 +101,9 @@ class FactorRiskModel(RiskModel):
 
         Return
         ------
-        Union[ndarray, Dict[Any, ndarray]]
+        ndarray
           Matrix in dimension (T, N) where N is the number of
-          instruments and T is the number of time frames,
-          or a dictionary of which its values are matrices in
-          the mentioned format.
+          instruments and T is the number of time frames.
         """
         return self._residual_returns
 

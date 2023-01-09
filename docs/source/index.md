@@ -20,6 +20,7 @@ usage
 
 risk_model/universe
 risk_model/risk_model
+risk_model/factor_risk_model
 risk_model/statistical
 risk_model/covariance
 ```
