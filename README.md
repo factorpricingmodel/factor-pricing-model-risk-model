@@ -69,7 +69,7 @@ Basically, there are three major features provided in the library
 The factor risk model is created by fitting instrument returns (which
 could be weekly, daily, or even higher granularity) and other related
 parameters into the model, and its products are factor exposures,
-factor returns, factor covariances, and residual returns (idiosyncratic
+factor returns, factor covariance, and residual returns (idiosyncratic
 returns).
 
 For example, to create a simple statistical PCA risk model,
@@ -82,6 +82,61 @@ risk_model.fit(X=returns)
 
 # Get fitted factor exposures
 risk_model.factor_exposures
+```
+
+Then, the risk model can be transformed by the returns of a
+larger homogeneous universe.
+
+```
+risk_model.transform(y=model_returns)
+```
+
+For further details, please refer to the [section](https://factor-pricing-model-risk-model.readthedocs.io/en/latest/risk_model/factor_risk_model.html) in the documentation.
+
+## Covariance estimation
+
+Currently, covariance estimation is supported in factor risk model,
+and the estimation depends on the fitted results.
+
+For example, a risk model transformed by model universe returns can
+derive the pairwise covariance and correlation for the model universe.
+
+```
+risk_model.transform(y=model_returns)
+
+cov = risk_model.cov()
+corr = risk_model.corr()
+```
+
+The following features will be supported in the near future
+
+- Covariance shrinkage
+- Covariance estimation from returns
+
+For further details, please refer to the [section](https://factor-pricing-model-risk-model.readthedocs.io/en/latest/risk_model/covariance.html) in the documentation.
+
+## Tracking risk model accuracy
+
+The library also focuses on the predictability interpretation of the risk
+model, and provides a few benchmarks to examine the following metrics
+
+- [Bias](https://factor-pricing-model-risk-model.readthedocs.io/en/latest/accuracy/bias.html)
+- [Value at Risk (VaR)](https://factor-pricing-model-risk-model.readthedocs.io/en/latest/accuracy/value_at_risk.html)
+
+For example, to examine the bias statistics of a risk model regarding
+an equally weighted portfolio (of which its weights are denoted as `weights`),
+pass the instrument observed returns (denoted as `returns`), and either
+a rolling risk model (to compute the volatility forecast) or a time series
+of volatility forecasts.
+
+```
+from fpm_risk_model.accuracy import compute_bias_statistics
+compute_bias_statistics(
+  X=returns,
+  weights=weights,
+  rolling_timeframe=36,
+  ...
+)
 ```
 
 ## Contribution

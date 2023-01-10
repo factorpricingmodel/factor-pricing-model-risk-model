@@ -14,7 +14,7 @@ $$
 
 Therefore, a factor risk model object contains the following attributes
 
-- Factor returns: The timeseries of factor returns, in dimension of (T, n)
+- Factor returns: The time series of factor returns, in dimension of (T, n)
 
 - Factor covariance: The covariance of the factors derived from the factor
   returns, in dimension of (n, n)
@@ -36,8 +36,8 @@ from estimation universe to model universe.
 Transformation requires passing the instrument returns of the model
 universe in
 
-1. Same length and granularity of timeseries
-2. Homogeneousity
+1. Same length and granularity of time series
+2. Homogeneity
 
 and the factor returns to examine their exposures and residual returns.
 
