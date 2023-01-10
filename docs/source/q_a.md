@@ -3,7 +3,7 @@
 The following are general questions which provide you overview
 of the usage and limitation of the library.
 
-### Are the risk model annualised?
+### Is the risk model annualised?
 
 The granularity of the risk model depends on the instrument
 returns fitting the risk model. If you input daily returns
