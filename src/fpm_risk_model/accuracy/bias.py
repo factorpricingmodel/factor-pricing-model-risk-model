@@ -17,8 +17,9 @@ def compute_standardized_returns(
 
     Standardized return is defined as
 
-      .. math::
-        b_t = \frac{r_t}{\\sigma_t}
+    .. math::
+        b_t = \\frac{r_t}{\\sigma_t}
+
 
     Parameters
     ----------
@@ -76,8 +77,8 @@ def compute_bias_statistics(
 
     and the bias statistic is expressed as
 
-     ..math::
-        B_T(t) = \\sqrt{\\frac{1}{T} \\sigma_{\\tau}(b_{\\tau} - \bar{b})^2
+     .. math::
+        B_T(t) = \\sqrt{\\frac{1}{T} \\sigma_{\\tau}(b_{\\tau} - \\bar{b})^2}
 
     Parameters
     ----------

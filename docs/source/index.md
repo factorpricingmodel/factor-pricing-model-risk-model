@@ -31,6 +31,7 @@ risk_model/covariance
 :maxdepth: 2
 
 accuracy/bias
+accuracy/value_at_risk
 ```
 
 ```{toctree}

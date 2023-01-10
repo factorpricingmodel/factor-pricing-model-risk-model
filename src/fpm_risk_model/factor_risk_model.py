@@ -140,7 +140,7 @@ class FactorRiskModel(RiskModel):
           Degrees of freedom.
 
         Returns
-        ----
+        -------
         ndarray
           Specific variances of the instruments.
         """
@@ -178,6 +178,8 @@ class FactorRiskModel(RiskModel):
             The transformed factor risk model.
         """
         X = self.factor_returns
+        if not X:
+            raise ValueError("Factor returns must be initialised first")
         if not isinstance(X, (ndarray, DataFrame)):
             raise TypeError(
                 "Factor returns should be in numpy ndarray type, but got "
@@ -214,12 +216,9 @@ class FactorRiskModel(RiskModel):
                 columns=y.columns,
             )
 
-        return FactorRiskModel(
-            factor_exposures=factor_exposures,
-            factor_returns=self.factor_returns.copy(),
-            factor_covariances=self.factor_covariances.copy(),
-            residual_returns=residual_returns,
-        )
+        self._factor_exposures = factor_exposures
+        self._residual_returns = residual_returns
+        return self
 
     def cov(self) -> ndarray:
         """

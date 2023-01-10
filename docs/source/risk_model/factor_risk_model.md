@@ -32,11 +32,42 @@ where T, N and n are the number of timeframes, instruments and factors.
 Transformation allows the risk model to be
 [expanded](https://factor-pricing-model-risk-model.readthedocs.io/en/latest/risk_model/universe.html)
 from estimation universe to model universe.
-The transformation requires passing the instrument returns of the model
+
+Transformation requires passing the instrument returns of the model
 universe in
 
 1. Same length and granularity of timeseries
 2. Homogeneousity
+
+and the factor returns to examine their exposures and residual returns.
+
+One usage is to transform the trained risk model to a bigger universe
+
+```
+risk_model.fit(estimation_returns)
+
+transformed_risk_model = risk_model.transform(model_returns)
+```
+
+Another usage is to combine the factor returns from risk models derived
+from different methodologies, e.g. statistical and fundamental, and
+then transform into a more generic risk model.
+
+For example, `model1` and `model2` contain the statistical and fundamental
+factors respectively. To combine them and then transform into a new risk
+model
+
+```
+import pandas as pd
+
+risk_model = FactorRiskModel(
+    factor_returns=pd.concat([model1.factor_returns, model2.factor_returns])
+)
+risk_model.transform(returns)
+```
+
+The transformed risk model is always updated in place. To retain the original
+risk model, please always use `copy` as a backup.
 
 ## Module
 
