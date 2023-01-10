@@ -12,6 +12,7 @@
 
 installation
 usage
+q_a
 ```
 
 ```{toctree}
@@ -29,7 +30,7 @@ risk_model/covariance
 :caption: Accuracy
 :maxdepth: 2
 
-accuracy
+accuracy/bias
 ```
 
 ```{toctree}

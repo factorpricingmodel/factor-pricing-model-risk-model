@@ -27,6 +27,17 @@ Therefore, a factor risk model object contains the following attributes
 
 where T, N and n are the number of timeframes, instruments and factors.
 
+## Transform
+
+Transformation allows the risk model to be
+[expanded](https://factor-pricing-model-risk-model.readthedocs.io/en/latest/risk_model/universe.html)
+from estimation universe to model universe.
+The transformation requires passing the instrument returns of the model
+universe in
+
+1. Same length and granularity of timeseries
+2. Homogeneousity
+
 ## Module
 
 ```{eval-rst}

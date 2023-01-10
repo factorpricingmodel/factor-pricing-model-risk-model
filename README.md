@@ -50,9 +50,11 @@ import fpm_risk_model
 
 ## Objective
 
-The project contains standardised functions and pipelines for
-researchers and fund managers to create "enterprise-level-like"
-risk model.
+The project provides frameworks to create multi-factor risk
+model on an "enterprise-like" level.
+
+The target audiences are researchers, developers and fund
+management looking for flexibility in creating risk models.
 
 ## Features
 
