@@ -178,7 +178,7 @@ class FactorRiskModel(RiskModel):
             The transformed factor risk model.
         """
         X = self.factor_returns
-        if not X:
+        if X is not None:
             raise ValueError("Factor returns must be initialised first")
         if not isinstance(X, (ndarray, DataFrame)):
             raise TypeError(
