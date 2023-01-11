@@ -1,91 +1,29 @@
-from typing import Iterable, Optional, Tuple
+from typing import Optional
 
-import pandas as pd
-from pandas import DataFrame, Timestamp
+from pandas import DataFrame
 
-from .factor_risk_model import FactorRiskModel
+from .rolling_risk_model import RollingRiskModel
 
 
-class RollingFactorRiskModel:
+class RollingFactorRiskModel(RollingRiskModel):
     """
     Rolling factor risk model.
+
+    Rolling factor risk model is a subclass of rolling risk model,
+    while it supports transforming each risk model given the instrument
+    returns.
     """
 
-    def __init__(
-        self,
-        model: Optional[FactorRiskModel] = None,
-        rolling_timeframe: Optional[int] = None,
-        show_progress: Optional[bool] = False,
-        values: Optional[object] = None,
-    ):
-        self._model = model
-        self._rolling_timeframe = rolling_timeframe
-        self._show_progress = show_progress
-        self._values = values
-
-    def get(self, name, **kwargs) -> FactorRiskModel:
+    def __init__(self, **kwargs):
         """
-        Return a factor risk model from the given name / key.
+        Constructor.
         """
-        return self._values.get(name, **kwargs)
-
-    def keys(self) -> Iterable[object]:
-        """
-        Return a list of keys.
-        """
-        return self._values.keys()
-
-    def values(self) -> Iterable[object]:
-        """
-        Return a list of values.
-        """
-        return self._values.values()
-
-    def items(self) -> Iterable[Tuple[Timestamp, FactorRiskModel]]:
-        """
-        Return a list of tuples with keys and values.
-        """
-        return self._values.items()
-
-    def fit(self, X: DataFrame) -> object:
-        """
-        Fit the model.
-        """
-        values = {}
-
-        T = X.shape[0]
-        iterator = range(0, T)
-        if self._show_progress:
-            from tqdm import tqdm
-
-            iterator = tqdm(iterator, leave=False)
-
-        try:
-            for index in iterator:
-                start_index = index
-                end_index = index + self._rolling_timeframe + 1
-                if end_index > T:
-                    break
-
-                if isinstance(X, pd.DataFrame):
-                    X_input = X.iloc[start_index:end_index, :]
-                    index_name = X.index[end_index - 1]
-                else:
-                    raise TypeError(f"Invalid type of X {X.__class__.__name__}")
-                values[index_name] = self._model.fit(X=X_input).copy()
-        except Exception as exc:
-            raise RuntimeError(
-                f"Failed to fit at the index {index} due to error: {exc}"
-            )
-
-        self._values = values
-        return self
+        super().__init__(**kwargs)
 
     def transform(
         self,
         y: DataFrame,
         regressor: Optional[object] = None,
-        rolling_timeframe: Optional[int] = None,
     ) -> object:
         """
         Transform the rolling factor risk model.
@@ -97,15 +35,13 @@ class RollingFactorRiskModel:
 
         Parameters
         ----------
-        y : ndarray
-            The instrument returns.
+        y : DataFrame
+            The instrument returns of which its index and columns
+            are the date / time and return values.
 
         regressor : object, default=None
             Regressor to transform the input y into factor exposures.
             If None, the regressor is set to the default WLS.
-
-        rolling_timeframe : int, default=None
-            The rolling timeframe.
 
         Returns
         -------
@@ -117,10 +53,9 @@ class RollingFactorRiskModel:
                 "Only DataFrame type is supported, but not " f"{y.__class__.__name__}"
             )
 
-        rolling_timeframe = rolling_timeframe or self._rolling_timeframe
-        if not rolling_timeframe:
+        if not self._rolling_timeframe:
             raise ValueError(
-                f"Rolling timeframe must be specified, but not {rolling_timeframe}"
+                f"Rolling timeframe must be specified, but not {self._rolling_timeframe}"
             )
 
         T = y.shape[0]
@@ -133,7 +68,7 @@ class RollingFactorRiskModel:
 
         for index in iterator:
             start_index = index
-            end_index = index + rolling_timeframe + 1
+            end_index = index + self._rolling_timeframe + 1
             if end_index > T:
                 break
 
@@ -153,7 +88,5 @@ class RollingFactorRiskModel:
                 regressor=regressor,
             )
 
-        return RollingFactorRiskModel(
-            values=values,
-            rolling_timeframe=rolling_timeframe,
-        )
+        self._values = values
+        return self

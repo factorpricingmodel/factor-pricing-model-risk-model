@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Union
+from typing import Optional
 
 from numpy import any, diag_indices_from, nan, ndarray, var
 from pandas import DataFrame
@@ -69,7 +69,7 @@ class FactorRiskModel(RiskModel):
         return self._factor_exposures
 
     @property
-    def factor_returns(self) -> Union[ndarray, Dict[Any, ndarray]]:
+    def factor_returns(self) -> ndarray:
         """
         Return the factor returns.
 
@@ -82,7 +82,7 @@ class FactorRiskModel(RiskModel):
         return self._factor_returns
 
     @property
-    def factor_covariances(self) -> Union[ndarray, Dict[Any, ndarray]]:
+    def factor_covariances(self) -> ndarray:
         """
         Return the factor returns.
 
