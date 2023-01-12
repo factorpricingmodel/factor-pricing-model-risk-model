@@ -4,6 +4,28 @@ All noteable changes to this project will be documented in this file.
 
 <!--next-version-placeholder-->
 
+## v2023.0.0 (2023-01-12)
+### Feature
+* Add value at risk accuracy ([`7034a8e`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/7034a8e2455c1709d7ef63ae71d98cf50c272cb7))
+
+### Fix
+* Another bug created from the previous bugfix ([`d48381a`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/d48381a1fb6e414e125b45bceae648b14823a3b5))
+* Bug in verifying ndarry existence ([`f42bd2d`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/f42bd2d38d9c6ba7f1680143fc5fb33182917262))
+* Typo in parameter ([`f5c5dab`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/f5c5dabbd0c07668372766d63215e316543ed880))
+* Correct the forecast return computation ([`6603ce0`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/6603ce00eb5e955c7203905c92496f395e030250))
+
+### Documentation
+* Add rolling risk model description ([`e20bb28`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/e20bb28c1661184cdf826b013b1ce41fbd3f4a3c))
+* Update README ([`a8fd716`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/a8fd71669bd2e0c35b1b2284404663639d7c4e73))
+* Correct typo ([`d15e684`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/d15e684f7a9bbbf00368cf0c75a35ab848b1050a))
+* Update bias and VaR documentation page ([`e9c7542`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/e9c7542da8d3abfbbf433e85b42537de0d622250))
+* Add bias and var placeholder pages ([`55d79b4`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/55d79b43f768a61201bad7451326a356d1edd780))
+* Correct factor risk model title ([`239c41f`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/239c41f5d2ac16ff3c1a18b2a123162776c4e77c))
+* Add factor risk model doc ([`b35ca51`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/b35ca518d833bcc939112b18b00b5724b96ee5a4))
+* Add risk model descrption ([`40af5a6`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/40af5a6006e513c6ed0934c8ea22a5871e8b1301))
+* Update README ([`5877781`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/5877781d8c64e99155da596fdc5a31b0c8d90e51))
+* Correct caller name ([`62c7df9`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/62c7df9c025a7d384124b21c13170a48b042814c))
+
 ## v2022.1.0 (2022-12-30)
 ### Feature
 * Add equal weight portfolio pipeline ([`a2a7db6`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/a2a7db6a01c92e7819d0c5d5ee4800bd250913f9))
