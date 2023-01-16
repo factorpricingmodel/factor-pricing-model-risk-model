@@ -10,5 +10,5 @@ returns fitting the risk model. If you input daily returns
 into the method `fit`, the covariance matrix returned by the
 same risk model contains the pairwise daily covariance entries,
 while the correlation is unaffected. In short, you need to manually
-annualise your risk model regarding to the granularity of fitting
+annualise your risk model regarding the granularity of fitting
 data.
