@@ -151,12 +151,34 @@ def expected_covariances():
 
 
 @pytest.fixture(scope="module")
+def expected_covariances_halflife():
+    return array(
+        [
+            [0.00029782, 0.00027028, 0.00020145],
+            [0.00027028, 0.00045064, 0.00025519],
+            [0.00020145, 0.00025519, 0.00030442],
+        ]
+    )
+
+
+@pytest.fixture(scope="module")
 def expected_correlations():
     return array(
         [
             [1.0, 0.78151541, 0.66179042],
             [0.78151541, 1.0, 0.56551526],
             [0.66179042, 0.56551526, 1.0],
+        ]
+    )
+
+
+@pytest.fixture(scope="module")
+def expected_correlations_halflife():
+    return array(
+        [
+            [1.0, 0.48164216, 0.46908114],
+            [0.48164216, 1.0, 0.75251128],
+            [0.46908114, 0.75251128, 1.0],
         ]
     )
 
@@ -192,3 +214,30 @@ def test_factor_risk_model_pd_correlations(
         expected_correlations, index=valid_instruments, columns=valid_instruments
     )
     pd.testing.assert_frame_equal(corr, expected_correlations)
+
+
+def test_factor_risk_model_pd_covariances_halflife(
+    factor_risk_model_pd, expected_covariances_halflife, valid_instruments
+):
+    cov = factor_risk_model_pd.cov(halflife=5)
+    expected_cov = pd.DataFrame(
+        expected_covariances_halflife,
+        index=valid_instruments,
+        columns=valid_instruments,
+    )
+    pd.testing.assert_frame_equal(
+        cov,
+        expected_cov,
+    )
+
+
+def test_factor_risk_model_pd_correlations_halflife(
+    factor_risk_model_pd, expected_correlations_halflife, valid_instruments
+):
+    corr = factor_risk_model_pd.corr(halflife=0.5)
+    expected_corr = pd.DataFrame(
+        expected_correlations_halflife,
+        index=valid_instruments,
+        columns=valid_instruments,
+    )
+    pd.testing.assert_frame_equal(corr, expected_corr)

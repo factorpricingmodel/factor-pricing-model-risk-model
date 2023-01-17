@@ -32,7 +32,7 @@ class RiskModel(ABC):
         self._show_all_instruments = show_all_instruments
 
     @abstractmethod
-    def cov(self) -> ndarray:
+    def cov(self, **kwargs) -> ndarray:
         """
         Get the covariance matrix.
 
@@ -43,7 +43,7 @@ class RiskModel(ABC):
             diagonal entries are the variances.
         """
 
-    def corr(self):
+    def corr(self, **kwargs):
         """
         Get the correlation matrix.
 
@@ -53,6 +53,6 @@ class RiskModel(ABC):
             A square pairwise correlation matrix which its
             diagonal entries are all ones.
         """
-        cov = self.cov()
+        cov = self.cov(**kwargs)
         vol = self._engine.sqrt(self._engine.diagonal(cov))
         return ((cov / vol).T / vol).T

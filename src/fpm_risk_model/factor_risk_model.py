@@ -220,9 +220,16 @@ class FactorRiskModel(RiskModel):
         self._residual_returns = residual_returns
         return self
 
-    def cov(self) -> ndarray:
+    def cov(self, halflife: Optional[float] = None) -> ndarray:
         """
         Get the covariance matrix.
+
+        Parameters
+        ----------
+        halflife : Optional[float]
+            Half life in applying the exponential weighting on factor
+            returns for computing the factor covariance matrix. If
+            None is passed, no exponential weighting is applied.
 
         Returns
         -------
@@ -230,39 +237,49 @@ class FactorRiskModel(RiskModel):
             A square pairwise covariance matrix which its
             diagonal entries are the variances.
         """
-        cov = (
-            self._factor_exposures.T @ self._factor_covariances @ self._factor_exposures
-        )
+        B = self._factor_exposures
+        F = self._factor_returns
+        if F is None:
+            raise ValueError("Factor return cannot be None")
+
+        if halflife is not None:
+            T = F.shape[0]
+            W = self._engine.array(
+                [2 ** (-(T - 1 - t) / halflife / 2) for t in range(0, T)]
+            )
+            F = F * W[:, self._engine.newaxis]
+
+        factor_covariances = self._engine.cov(F.T)
         specific_variances = self.specific_variances()
 
-        if isinstance(cov, DataFrame):
-            cov_values = cov.values
-            specific_variances = specific_variances.loc[cov.index]
-        elif isinstance(cov, ndarray):
-            cov_values = cov
-        else:
+        R = specific_variances
+        if isinstance(B, DataFrame):
+            instruments = self._factor_exposures.columns
+            B = B.values
+            R = R.loc[instruments].values
+
+        if not isinstance(B, ndarray):
             raise TypeError(
                 "Only pandas DataFrame / numpy ndarray is supported, but not "
-                f"{cov.__class__.__name__}"
+                f"{B.__class__.__name__}"
             )
+
+        cov = B.T @ factor_covariances @ B
 
         # Add the specific variances into the covariance matrix
-        cov_values[diag_indices_from(cov_values)] += specific_variances
+        cov[diag_indices_from(cov)] += R
 
-        valid_instruments = any(cov_values != 0.0, axis=0)
+        # Set zero covariance instruments to nan
+        valid_instruments = any(cov != 0.0, axis=0)
+        cov[~valid_instruments, :] = nan
+        cov[:, ~valid_instruments] = nan
 
-        if self._show_all_instruments:
-            # Set zero covariance instruments to nan
-            cov_values[~valid_instruments, :] = nan
-            cov_values[:, ~valid_instruments] = nan
-        elif isinstance(cov, DataFrame):
-            cov = cov.loc[valid_instruments, valid_instruments]
-        elif isinstance(cov, ndarray):
+        if not self._show_all_instruments:
             cov = cov[valid_instruments, :][:, valid_instruments]
-        else:
-            raise TypeError(
-                "Only pandas DataFrame / numpy ndarray is supported, but not "
-                f"{cov.__class__.__name__}"
-            )
+            if isinstance(self._factor_exposures, DataFrame):
+                instruments = instruments[valid_instruments]
+
+        if isinstance(self._factor_exposures, DataFrame):
+            cov = DataFrame(cov, index=instruments, columns=instruments)
 
         return cov
