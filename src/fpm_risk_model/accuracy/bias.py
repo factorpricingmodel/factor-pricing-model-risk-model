@@ -11,6 +11,7 @@ def compute_standardized_returns(
     weights: DataFrame,
     rolling_risk_model: Optional[RollingFactorRiskModel] = None,
     forecast_vols: Optional[Series] = None,
+    cov_halflife: Optional[float] = None,
 ) -> Series:
     """
     Compute the standardized returns given the rolling risk model.
@@ -31,6 +32,8 @@ def compute_standardized_returns(
         The rolling risk model.
     forecast_vols: Series
         The forecast volatility.
+    cov_halflife: Optional[float]
+        Halflife in computing covariances.
 
     Returns
     -------
@@ -48,7 +51,7 @@ def compute_standardized_returns(
             if risk_model is None:
                 continue
             cov = (
-                risk_model.cov()
+                risk_model.cov(halflife=cov_halflife)
                 .reindex(index=instruments, columns=instruments)
                 .fillna(0.0)
                 .values
@@ -66,6 +69,7 @@ def compute_bias_statistics(
     rolling_risk_model: Optional[RollingFactorRiskModel] = None,
     forecast_vols: Optional[Series] = None,
     min_periods: Optional[int] = None,
+    cov_halflife: Optional[float] = None,
 ) -> Series:
     """
     Compute the bias statistics.
@@ -90,6 +94,8 @@ def compute_bias_statistics(
         The forecast volatility.
     rolling_risk_model: RollingFactorRiskModel
         The rolling risk model.
+    cov_halflife: Optional[float]
+        Halflife in computing covariances.
 
     Returns
     -------
@@ -101,6 +107,7 @@ def compute_bias_statistics(
         weights=weights,
         rolling_risk_model=rolling_risk_model,
         forecast_vols=forecast_vols,
+        cov_halflife=cov_halflife,
     )
     return standardized_returns.rolling(
         rolling_timeframe, min_periods=min_periods

@@ -12,6 +12,7 @@ def compute_value_at_risk_threshold(
     rolling_risk_model: Optional[RollingFactorRiskModel] = None,
     forecast_vols: Optional[Series] = None,
     threshold: Optional[float] = 0.95,
+    cov_halflife: Optional[float] = None,
 ) -> Series:
     """
     Compute the VaR threshold for the given weights.
@@ -33,6 +34,9 @@ def compute_value_at_risk_threshold(
     threshold: float
         The threshold for the VaR. The value should be between 0
         and 1. Default is 95%.
+
+    cov_halflife: Optional[float]
+        Halflife in computing covariances.
     """
     if not (0.0 < threshold < 1.0):
         raise ValueError(f"Threshold {threshold} should be between 0 and 1")
@@ -45,7 +49,7 @@ def compute_value_at_risk_threshold(
             if risk_model is None:
                 continue
             cov = (
-                risk_model.cov()
+                risk_model.cov(halflife=cov_halflife)
                 .reindex(index=instruments, columns=instruments)
                 .fillna(0.0)
                 .values
@@ -64,6 +68,7 @@ def compute_value_at_risk_breach_statistics(
     rolling_risk_model: Optional[RollingFactorRiskModel] = None,
     forecast_vols: Optional[Series] = None,
     threshold: Optional[float] = 0.95,
+    cov_halflife: Optional[float] = None,
 ) -> Series:
     """
     Compute the VaR breach statistics.
@@ -89,12 +94,16 @@ def compute_value_at_risk_breach_statistics(
     threshold: float
         The threshold for the VaR. The value should be between 0
         and 1. Default is 95%.
+
+    cov_halflife: Optional[float]
+        Halflife in computing covariances.
     """
     value_at_risk_threshold = compute_value_at_risk_threshold(
         weights=weights,
         rolling_risk_model=rolling_risk_model,
         forecast_vols=forecast_vols,
         threshold=threshold,
+        cov_halflife=cov_halflife,
     )
     portfolio_returns = sum(X * weights, axis=1)[value_at_risk_threshold.index]
     return portfolio_returns.le(-value_at_risk_threshold)
@@ -108,6 +117,7 @@ def compute_value_at_risk_rolling_breach_statistics(
     forecast_vols: Optional[Series] = None,
     threshold: Optional[float] = 0.95,
     min_periods: Optional[int] = None,
+    cov_halflife: Optional[float] = None,
 ) -> Series:
     """
     Compute the VaR breach statistics.
@@ -134,9 +144,12 @@ def compute_value_at_risk_rolling_breach_statistics(
     forecast_vols: Optional[Series]
         The forecast volatility of instruments.
 
-    threshold: float
+    threshold: Optional[float]
         The threshold for the VaR. The value should be between 0
         and 1. Default is 95%.
+
+    cov_halflife: Optional[float]
+        Halflife in computing covariances.
     """
     breach_statistics = compute_value_at_risk_breach_statistics(
         X=X,
@@ -144,6 +157,7 @@ def compute_value_at_risk_rolling_breach_statistics(
         rolling_risk_model=rolling_risk_model,
         forecast_vols=forecast_vols,
         threshold=threshold,
+        cov_halflife=cov_halflife,
     )
     return (
         breach_statistics.rolling(rolling_timeframe, min_periods=min_periods).sum()
