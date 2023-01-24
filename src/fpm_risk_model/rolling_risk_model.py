@@ -113,3 +113,12 @@ class RollingRiskModel:
 
         self._values = values
         return self
+
+    def asdict(self):
+        """
+        Returns a dict representation of the object.
+        """
+        return {
+            "rolling_timeframe": self._rolling_timeframe,
+            "show_progress": self._show_progress,
+        }

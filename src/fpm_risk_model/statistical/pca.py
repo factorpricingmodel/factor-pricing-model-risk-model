@@ -123,3 +123,14 @@ class PCA(FactorRiskModel):
         self._residual_returns = residual_returns
         self._factor_covariances = F_cov
         return self
+
+    def asdict(self):
+        """
+        Returns a dict representation of the object.
+        """
+        return {
+            "n_components": self._n_components,
+            "demean": self._demean,
+            "speedup": self._speedup,
+            **self.asdict(),
+        }

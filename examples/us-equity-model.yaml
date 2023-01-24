@@ -17,7 +17,6 @@ task:
       load-caller: "fpm_risk_model.pipeline:load_rolling_factor_risk_model"
       load-parameters:
         format: "parquet"
-        rolling_timeframe: 252
   validity:
     output:
       directory: "{output_directory}/model-universe"

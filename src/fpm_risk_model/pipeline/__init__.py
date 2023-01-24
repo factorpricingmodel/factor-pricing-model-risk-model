@@ -96,7 +96,7 @@ def dump_factor_risk_model(
     )
 
     with open(success_file, mode="w") as f:
-        f.write("")
+        f.write(json.dumps({"parameters": risk_model.asdict()}))
 
 
 def dump_rolling_factor_risk_model(
@@ -132,7 +132,9 @@ def dump_rolling_factor_risk_model(
         )
 
     with open(success_file, mode="w") as f:
-        json.dump({"directories": keys}, f)
+        f.write(
+            json.dumps({"directories": keys, "parameters": rolling_risk_model.asdict()})
+        )
 
 
 def load_factor_risk_model(
@@ -197,9 +199,8 @@ def load_rolling_factor_risk_model(
         )
         values[pd.Timestamp(directory)] = risk_model
 
-    return RollingFactorRiskModel(
-        values=values,
-    )
+    model_parameters = metadata.get("parameters", {})
+    return RollingFactorRiskModel(values=values, **model_parameters)
 
 
 def where_validity(

@@ -56,3 +56,9 @@ class RiskModel(ABC):
         cov = self.cov(**kwargs)
         vol = self._engine.sqrt(self._engine.diagonal(cov))
         return ((cov / vol).T / vol).T
+
+    def asdict(self):
+        """
+        Returns a dict representation of the object.
+        """
+        return {"show_all_instruments": self._show_all_instruments}
