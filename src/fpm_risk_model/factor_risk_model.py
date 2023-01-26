@@ -1,7 +1,7 @@
 from typing import Optional
 
-from numpy import any, diag_indices_from, nan, ndarray, var
-from pandas import DataFrame
+from numpy import any, diag_indices_from, mean, nan, ndarray, newaxis
+from pandas import DataFrame, Series
 
 from .regressor import WLS
 from .risk_model import RiskModel
@@ -130,7 +130,7 @@ class FactorRiskModel(RiskModel):
             **self._kwargs,
         )
 
-    def specific_variances(self, ddof=1) -> ndarray:
+    def specific_variances(self, weights=None, ddof=1) -> ndarray:
         """
         Get specific variances.
 
@@ -144,15 +144,25 @@ class FactorRiskModel(RiskModel):
         ndarray
           Specific variances of the instruments.
         """
-        if isinstance(self._residual_returns, ndarray):
-            return var(self._residual_returns, axis=0, ddof=ddof)
-        elif isinstance(self._residual_returns, DataFrame):
-            return self._residual_returns.var(ddof=ddof)
+        T = self._residual_returns.shape[0]
+        residual_returns = self._residual_returns
+        if isinstance(self._residual_returns, DataFrame):
+            residual_returns = residual_returns.values
 
-        raise TypeError(
-            "Only pandas DataFrame / numpy ndarray is supported, but not "
-            f"{self._residual_returns.__class__.__name__}"
-        )
+        if weights is not None:
+            r_mean = mean(residual_returns * weights[:, newaxis], axis=0)
+            variances = (residual_returns - r_mean) ** 2
+            variances *= weights[:, newaxis]
+        else:
+            r_mean = mean(residual_returns, axis=0)
+            variances = (residual_returns - r_mean) ** 2
+
+        variances = sum(variances) / (T - ddof)
+
+        if isinstance(self._residual_returns, DataFrame):
+            variances = Series(variances, index=self._residual_returns.columns)
+
+        return variances
 
     def transform(self, y: ndarray, regressor: Optional[object] = None) -> object:
         """
@@ -220,7 +230,7 @@ class FactorRiskModel(RiskModel):
         self._residual_returns = residual_returns
         return self
 
-    def cov(self, halflife: Optional[float] = None) -> ndarray:
+    def cov(self, halflife: Optional[float] = None, ddof=1) -> ndarray:
         """
         Get the covariance matrix.
 
@@ -241,16 +251,20 @@ class FactorRiskModel(RiskModel):
         F = self._factor_returns
         if F is None:
             raise ValueError("Factor return cannot be None")
+        elif isinstance(F, DataFrame):
+            F = F.values
 
+        W = None
+        T = F.shape[0]
         if halflife is not None:
-            T = F.shape[0]
             W = self._engine.array(
-                [2 ** (-(T - 1 - t) / halflife / 2) for t in range(0, T)]
+                [2 ** (-(T - 1 - t) / halflife) for t in range(0, T)]
             )
-            F = F * W[:, self._engine.newaxis]
+            F = F * (W[:, self._engine.newaxis] ** 0.5)
 
-        factor_covariances = self._engine.cov(F.T)
-        specific_variances = self.specific_variances()
+        F = F - self._engine.mean(F, axis=0)
+        factor_covariances = (F.T @ F) / (T - ddof)
+        specific_variances = self.specific_variances(weights=W, ddof=ddof)
 
         R = specific_variances
         if isinstance(B, DataFrame):

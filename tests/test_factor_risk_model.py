@@ -154,9 +154,9 @@ def expected_covariances():
 def expected_covariances_halflife():
     return array(
         [
-            [0.00029782, 0.00027028, 0.00020145],
-            [0.00027028, 0.00045064, 0.00025519],
-            [0.00020145, 0.00025519, 0.00030442],
+            [0.00030829, 0.00032326, 0.00023823],
+            [0.00032326, 0.0005382, 0.00028871],
+            [0.00023823, 0.00028871, 0.0003789],
         ]
     )
 
@@ -176,9 +176,9 @@ def expected_correlations():
 def expected_correlations_halflife():
     return array(
         [
-            [1.0, 0.48164216, 0.46908114],
-            [0.48164216, 1.0, 0.75251128],
-            [0.46908114, 0.75251128, 1.0],
+            [1.0, 0.79361204, 0.69702779],
+            [0.79361204, 1.0, 0.63932678],
+            [0.69702779, 0.63932678, 1.0],
         ]
     )
 
@@ -219,7 +219,7 @@ def test_factor_risk_model_pd_correlations(
 def test_factor_risk_model_pd_covariances_halflife(
     factor_risk_model_pd, expected_covariances_halflife, valid_instruments
 ):
-    cov = factor_risk_model_pd.cov(halflife=5)
+    cov = factor_risk_model_pd.cov(halflife=10)
     expected_cov = pd.DataFrame(
         expected_covariances_halflife,
         index=valid_instruments,
@@ -234,7 +234,7 @@ def test_factor_risk_model_pd_covariances_halflife(
 def test_factor_risk_model_pd_correlations_halflife(
     factor_risk_model_pd, expected_correlations_halflife, valid_instruments
 ):
-    corr = factor_risk_model_pd.corr(halflife=0.5)
+    corr = factor_risk_model_pd.corr(halflife=10)
     expected_corr = pd.DataFrame(
         expected_correlations_halflife,
         index=valid_instruments,
