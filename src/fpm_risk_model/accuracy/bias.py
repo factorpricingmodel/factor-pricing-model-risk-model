@@ -65,7 +65,7 @@ def compute_standardized_returns(
 def compute_bias_statistics(
     X: DataFrame,
     weights: DataFrame,
-    rolling_timeframe: int,
+    window: int,
     rolling_risk_model: Optional[RollingFactorRiskModel] = None,
     forecast_vols: Optional[Series] = None,
     min_periods: Optional[int] = None,
@@ -109,6 +109,4 @@ def compute_bias_statistics(
         forecast_vols=forecast_vols,
         cov_halflife=cov_halflife,
     )
-    return standardized_returns.rolling(
-        rolling_timeframe, min_periods=min_periods
-    ).std()
+    return standardized_returns.rolling(window, min_periods=min_periods).std()

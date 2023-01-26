@@ -60,7 +60,7 @@ def test_compute_value_at_risk_rolling_breach_statistics(
         weights=weights,
         rolling_risk_model=rolling_factor_risk_model,
         threshold=0.95,
-        rolling_timeframe=3,
+        window=3,
         min_periods=0,
     )
     expected_var_rolling_breach_statistics = Series(

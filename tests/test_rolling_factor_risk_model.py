@@ -5,7 +5,7 @@ from numpy import array
 from fpm_risk_model.rolling_factor_risk_model import RollingFactorRiskModel
 from fpm_risk_model.statistical import PCA
 
-ROLLING_TIMEFRAME = 5
+WINDOW = 5
 
 
 @pytest.fixture(scope="module")
@@ -147,7 +147,7 @@ def expected_factor_returns(dates, factors):
     return {
         dates[index]: pd.DataFrame(
             df,
-            index=dates[index - ROLLING_TIMEFRAME : index + 1],
+            index=dates[index - WINDOW : index + 1],
             columns=factors,
         )
         for index, df in values.items()
@@ -211,7 +211,7 @@ def expected_residual_returns(dates, instruments):
     return {
         dates[index]: pd.DataFrame(
             df,
-            index=dates[index - ROLLING_TIMEFRAME : index + 1],
+            index=dates[index - WINDOW : index + 1],
             columns=instruments,
         )
         for index, df in values.items()
@@ -255,7 +255,7 @@ def test_rolling_factor_risk_model(
     )
     rolling_model = RollingFactorRiskModel(
         model=model,
-        rolling_timeframe=5,
+        window=WINDOW,
         show_progress=False,
     )
     rolling_model.fit(X=daily_returns)

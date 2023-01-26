@@ -134,7 +134,7 @@ from fpm_risk_model.accuracy import compute_bias_statistics
 compute_bias_statistics(
   X=returns,
   weights=weights,
-  rolling_timeframe=36,
+  window=window
   ...
 )
 ```

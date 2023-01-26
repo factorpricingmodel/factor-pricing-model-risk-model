@@ -18,7 +18,7 @@ class RollingRiskModel:
     def __init__(
         self,
         model: Optional[RiskModel] = None,
-        rolling_timeframe: Optional[int] = None,
+        window: Optional[int] = None,
         show_progress: Optional[bool] = False,
         values: Optional[Dict[datetime, RiskModel]] = None,
     ):
@@ -30,7 +30,7 @@ class RollingRiskModel:
         model: Optional[RiskModel]
             Risk model object to fit in rolling basis.
 
-        rolling_timeframe: Optional[int]
+        window: Optional[int]
             Number of rolling windows to use from the returns.
             Must be provided in fitting the model.
 
@@ -41,7 +41,7 @@ class RollingRiskModel:
             Rolling risk models values.
         """
         self._model = model
-        self._rolling_timeframe = rolling_timeframe
+        self._window = window
         self._show_progress = show_progress
         self._values = values
 
@@ -96,7 +96,7 @@ class RollingRiskModel:
         try:
             for index in iterator:
                 start_index = index
-                end_index = index + self._rolling_timeframe + 1
+                end_index = index + self._window + 1
                 if end_index > T:
                     break
 
@@ -119,6 +119,6 @@ class RollingRiskModel:
         Returns a dict representation of the object.
         """
         return {
-            "rolling_timeframe": self._rolling_timeframe,
+            "window": self._window,
             "show_progress": self._show_progress,
         }

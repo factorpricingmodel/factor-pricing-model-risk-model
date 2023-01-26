@@ -53,9 +53,9 @@ class RollingFactorRiskModel(RollingRiskModel):
                 "Only DataFrame type is supported, but not " f"{y.__class__.__name__}"
             )
 
-        if not self._rolling_timeframe:
+        if not self._window:
             raise ValueError(
-                f"Rolling timeframe must be specified, but not {self._rolling_timeframe}"
+                f"Rolling timeframe must be specified, but not {self._window}"
             )
 
         T = y.shape[0]
@@ -68,7 +68,7 @@ class RollingFactorRiskModel(RollingRiskModel):
 
         for index in iterator:
             start_index = index
-            end_index = index + self._rolling_timeframe + 1
+            end_index = index + self._window + 1
             if end_index > T:
                 break
 

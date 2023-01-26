@@ -53,7 +53,7 @@ task:
       X: !data validity-forecast-return
       weights: !data equal-weights
       rolling_risk_model: !data model-risk-model
-      rolling_timeframe: 36
+      window: 36
       min_periods: 20
     output: *output-cache
   bias-statistics/output:

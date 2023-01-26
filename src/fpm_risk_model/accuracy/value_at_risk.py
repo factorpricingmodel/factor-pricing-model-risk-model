@@ -112,7 +112,7 @@ def compute_value_at_risk_breach_statistics(
 def compute_value_at_risk_rolling_breach_statistics(
     X: ndarray,
     weights: ndarray,
-    rolling_timeframe: int,
+    window: int,
     rolling_risk_model: Optional[RollingFactorRiskModel] = None,
     forecast_vols: Optional[Series] = None,
     threshold: Optional[float] = 0.95,
@@ -134,7 +134,7 @@ def compute_value_at_risk_rolling_breach_statistics(
         respectively. The weights should be normalized, i.e.
         sum to one for each time frame.
 
-    rolling_timeframe: int
+    window: int
         The number of rolling time frames to compute the percentage
         of returns breaching the specified VaR.
 
@@ -159,7 +159,4 @@ def compute_value_at_risk_rolling_breach_statistics(
         threshold=threshold,
         cov_halflife=cov_halflife,
     )
-    return (
-        breach_statistics.rolling(rolling_timeframe, min_periods=min_periods).sum()
-        / rolling_timeframe
-    )
+    return breach_statistics.rolling(window, min_periods=min_periods).sum() / window

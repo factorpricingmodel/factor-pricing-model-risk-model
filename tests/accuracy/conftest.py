@@ -72,7 +72,7 @@ def rolling_factor_risk_model(daily_returns):
     )
     rolling_model = RollingFactorRiskModel(
         model=model,
-        rolling_timeframe=5,
+        window=5,
         show_progress=False,
     )
     return rolling_model.fit(X=daily_returns)

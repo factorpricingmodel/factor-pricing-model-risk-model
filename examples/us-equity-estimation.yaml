@@ -35,7 +35,7 @@ task:
       model_parameters:
         n_components: 20
       data: !data validity-adjusted-close-return
-      rolling_timeframe: 252
+      winow: 252
       show_progress: true
     output:
       name: ""

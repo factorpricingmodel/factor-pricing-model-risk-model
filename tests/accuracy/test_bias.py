@@ -41,7 +41,7 @@ def test_compute_bias_statistics(daily_returns, weights, rolling_factor_risk_mod
         X=daily_returns,
         weights=weights,
         rolling_risk_model=rolling_factor_risk_model,
-        rolling_timeframe=5,
+        window=5,
         min_periods=0,
     )
     expected_bias_statistics = Series(

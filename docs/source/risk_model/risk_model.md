@@ -38,7 +38,7 @@ from fpm_risk_model.statistics.pca import PCA
 
 rolling_risk_model = RollingRiskModel(
   model=PCA(n_components=5),
-  rolling_timeframes=63,
+  window=63,
 )
 
 # Instrument returns must be a DataFrame
