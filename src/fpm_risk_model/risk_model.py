@@ -3,7 +3,23 @@ from typing import Any
 
 from numpy import ndarray
 
+from .config import Config
 from .engine import NumpyEngine
+
+
+class RiskModelConfig(Config):
+    """
+    Risk model configuration.
+
+    Parameters
+    ----------
+    show_all_instruments : bool.
+        Indicate whether to show all instruments. Default is False.
+        If True, the instruments outside of the universe in each
+        period may not be filtered out.
+    """
+
+    show_all_instruments: bool = False
 
 
 class RiskModel(ABC):
@@ -14,7 +30,11 @@ class RiskModel(ABC):
     related metrics.
     """
 
-    def __init__(self, engine: Any = None, show_all_instruments: bool = False):
+    ConfigClass = RiskModelConfig
+
+    def __init__(
+        self, engine: Any = None, show_all_instruments: bool = False, **kwargs
+    ):
         """
         Constructor.
 
@@ -29,7 +49,9 @@ class RiskModel(ABC):
             period may not be filtered out.
         """
         self._engine = engine or NumpyEngine
-        self._show_all_instruments = show_all_instruments
+        self._config = self.ConfigClass(
+            show_all_instruments=show_all_instruments, **kwargs
+        )
 
     @abstractmethod
     def cov(self, **kwargs) -> ndarray:
@@ -61,4 +83,4 @@ class RiskModel(ABC):
         """
         Returns a dict representation of the object.
         """
-        return {"show_all_instruments": self._show_all_instruments}
+        return self.config.dict()

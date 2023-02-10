@@ -3,7 +3,26 @@ from typing import Dict, Iterable, Optional, Tuple
 
 from pandas import DataFrame
 
+from .config import Config
 from .risk_model import RiskModel
+
+
+class RollingRiskModelConfig(Config):
+    """
+    Rollingrisk model configuration.
+
+    Parameters
+    ----------
+    window: Optional[int]
+        Number of rolling windows to use from the returns.
+        Must be provided in fitting the model.
+
+    show_progress: Optional[bool]
+        Indicate to show progress bar in running.
+    """
+
+    window: int
+    show_progress: bool = False
 
 
 class RollingRiskModel:
@@ -14,6 +33,8 @@ class RollingRiskModel:
     in a given date / time range. Each key and value pair is a
     date / time and risk model object respectively.
     """
+
+    ConfigClass = RollingRiskModelConfig
 
     def __init__(
         self,
@@ -41,9 +62,8 @@ class RollingRiskModel:
             Rolling risk models values.
         """
         self._model = model
-        self._window = window
-        self._show_progress = show_progress
         self._values = values
+        self._config = self.ConfigClass(window=window, show_progress=show_progress)
 
     def get(self, name, **kwargs) -> RiskModel:
         """
@@ -88,7 +108,7 @@ class RollingRiskModel:
 
         T = X.shape[0]
         iterator = range(0, T)
-        if self._show_progress:
+        if self._config.show_progress:
             from tqdm import tqdm
 
             iterator = tqdm(iterator, leave=False)
@@ -96,7 +116,7 @@ class RollingRiskModel:
         try:
             for index in iterator:
                 start_index = index
-                end_index = index + self._window + 1
+                end_index = index + self._config.window + 1
                 if end_index > T:
                     break
 
@@ -118,7 +138,4 @@ class RollingRiskModel:
         """
         Returns a dict representation of the object.
         """
-        return {
-            "window": self._window,
-            "show_progress": self._show_progress,
-        }
+        return self._config.dict()

@@ -8,7 +8,34 @@ from ..factor_risk_model import FactorRiskModel
 from ..regressor import WLS
 
 
+class PCAConfig(FactorRiskModel.ConfigClass):
+    """
+    PCA statistics model configuration class.
+
+
+    Parameters
+    ----------
+    n_components : int
+        Number of components.
+    demean : Optional[bool]
+        Indicate whether to demean before fitting. Default is True.
+    speedup: Optional[bool]
+        Indicate whether to speed up the computation as much as possible.
+        Default is True.
+    """
+
+    n_components: int
+    demean: Optional[bool] = True
+    speedup: Optional[bool] = True
+
+
 class PCA(FactorRiskModel):
+    """
+    PCA statistics model.
+    """
+
+    ConfigClass = PCAConfig
+
     def __init__(
         self,
         n_components: int,
@@ -29,10 +56,9 @@ class PCA(FactorRiskModel):
           Indicate whether to speed up the computation as much as possible.
           Default is True.
         """
-        super().__init__(**kwargs)
-        self._n_components = n_components
-        self._demean = demean
-        self._speedup = speedup
+        super().__init__(
+            n_components=n_components, demean=demean, speedup=speedup, **kwargs
+        )
         self._model = sklearn_PCA(n_components=n_components)
 
     def fit(self, X: Union[np.ndarray, pd.DataFrame]) -> object:
@@ -64,12 +90,12 @@ class PCA(FactorRiskModel):
             )
 
         # Normalize the instrument return by full history mean
-        if self._demean:
+        if self._config.demean:
             X_mean = np.array(np.mean(X, axis=0))[np.newaxis, :]
             X_fit = np.subtract(X_fit, X_mean)
 
         # Remove the instruments without any returns always
-        if self._speedup:
+        if self._config.speedup:
             # Select the instruments of which the returns are not always 0
             X_reindex = ~np.all(np.abs(X_fit) < 1e-20, axis=0)
             X_fit = X_fit[:, X_reindex]
@@ -97,8 +123,8 @@ class PCA(FactorRiskModel):
 
         # Fill back the instruments which don't have any returns
         # with 0.0 exposures and residual returns
-        if self._speedup:
-            B_reindex = np.zeros((self._n_components, N))
+        if self._config.speedup:
+            B_reindex = np.zeros((self._config.n_components, N))
             residual_returns_reindex = np.zeros(X.shape)
             B_reindex[:, X_reindex] = B[:, :]
             residual_returns_reindex[:, X_reindex] = residual_returns[:, :]
@@ -108,7 +134,7 @@ class PCA(FactorRiskModel):
         # Convert back to dataframe if necessary
         if isinstance(X, pd.DataFrame):
             factor_index = [
-                f"factor_{index + 1}" for index in range(self._n_components)
+                f"factor_{index + 1}" for index in range(self._config.n_components)
             ]
             B = pd.DataFrame(B, index=factor_index, columns=X.columns)
             F = pd.DataFrame(F, index=X.index, columns=factor_index)
@@ -123,14 +149,3 @@ class PCA(FactorRiskModel):
         self._residual_returns = residual_returns
         self._factor_covariances = F_cov
         return self
-
-    def asdict(self):
-        """
-        Returns a dict representation of the object.
-        """
-        return {
-            "n_components": self._n_components,
-            "demean": self._demean,
-            "speedup": self._speedup,
-            **self.asdict(),
-        }

@@ -53,22 +53,22 @@ class RollingFactorRiskModel(RollingRiskModel):
                 "Only DataFrame type is supported, but not " f"{y.__class__.__name__}"
             )
 
-        if not self._window:
+        if not self._config.window:
             raise ValueError(
-                f"Rolling timeframe must be specified, but not {self._window}"
+                f"Rolling timeframe must be specified, but not {self._config.window}"
             )
 
         T = y.shape[0]
         values = {}
         iterator = range(T)
-        if self._show_progress:
+        if self._config.show_progress:
             from tqdm import tqdm
 
             iterator = tqdm(iterator, leave=False)
 
         for index in iterator:
             start_index = index
-            end_index = index + self._window + 1
+            end_index = index + self._config.window + 1
             if end_index > T:
                 break
 

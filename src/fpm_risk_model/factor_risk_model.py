@@ -53,7 +53,6 @@ class FactorRiskModel(RiskModel):
         self._factor_returns = factor_returns
         self._factor_covariances = factor_covariances
         self._residual_returns = residual_returns
-        self._kwargs = kwargs
 
     @property
     def factor_exposures(self) -> ndarray:
@@ -127,7 +126,7 @@ class FactorRiskModel(RiskModel):
             factor_covariances=self._factor_covariances.copy(),
             factor_returns=self._factor_returns.copy(),
             residual_returns=self._residual_returns.copy(),
-            **self._kwargs,
+            **self._config.dict(),
         )
 
     def specific_variances(self, weights=None, ddof=1) -> ndarray:
@@ -288,7 +287,7 @@ class FactorRiskModel(RiskModel):
         cov[~valid_instruments, :] = nan
         cov[:, ~valid_instruments] = nan
 
-        if not self._show_all_instruments:
+        if not self._config.show_all_instruments:
             cov = cov[valid_instruments, :][:, valid_instruments]
             if isinstance(self._factor_exposures, DataFrame):
                 instruments = instruments[valid_instruments]
