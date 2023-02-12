@@ -4,6 +4,20 @@ All noteable changes to this project will be documented in this file.
 
 <!--next-version-placeholder-->
 
+## v2023.1.0 (2023-02-12)
+### Feature
+* Introduce cov half life ([`92d96dc`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/92d96dc5449e01dca49f0dce2d159891e082022e))
+* Add cov halflife into the accuracy functions ([`cd20be4`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/cd20be4bb91bd61435cfc1ff1791111f36424ce2))
+* Support exponential weighted factor covariance ([`ffac512`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/ffac512c0012aa372cc8ed7fed98f48df2c1e747))
+* Support exponential weighted least square ([`db4ae53`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/db4ae5360892c4d941fe3f815cfd0a26269012b4))
+
+### Fix
+* Ewm in cov ([`f34ddbf`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/f34ddbfeb4c2409bed1f3ecddda2f1bdccd6bb60))
+
+### Documentation
+* Fix example config ([`149a660`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/149a6607b008af0a7e19569e2302b4e5318f11f3))
+* Fix grammar ([`cb4a456`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/cb4a45625d2bb26b552fadead498f3ebe3059dd9))
+
 ## v2023.0.0 (2023-01-12)
 ### Feature
 * Add value at risk accuracy ([`7034a8e`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/7034a8e2455c1709d7ef63ae71d98cf50c272cb7))
