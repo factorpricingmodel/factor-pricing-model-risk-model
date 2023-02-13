@@ -30,7 +30,6 @@ class FactorRiskModel(RiskModel):
         self,
         factor_exposures: ndarray = None,
         factor_returns: ndarray = None,
-        factor_covariances: ndarray = None,
         residual_returns: ndarray = None,
         **kwargs,
     ):
@@ -43,15 +42,12 @@ class FactorRiskModel(RiskModel):
           Factor exposures of the factor risk model.
         factors_returns : ndarray
           Factor returns of the factor risk model.
-        factor_covariances : ndarray
-          Factor covariances of the factor risk model.
         residual_returns : ndarray
           Residual returns of the factor risk model.
         """
         super().__init__(**kwargs)
         self._factor_exposures = factor_exposures
         self._factor_returns = factor_returns
-        self._factor_covariances = factor_covariances
         self._residual_returns = residual_returns
 
     @property
@@ -79,19 +75,6 @@ class FactorRiskModel(RiskModel):
           factors and T is the number of time frames.
         """
         return self._factor_returns
-
-    @property
-    def factor_covariances(self) -> ndarray:
-        """
-        Return the factor returns.
-
-        Return
-        ------
-        ndarray
-          Matrix in dimension (n, n) where n is the number of
-          factors.
-        """
-        return self._factor_covariances
 
     @property
     def residual_returns(self) -> ndarray:
@@ -123,7 +106,6 @@ class FactorRiskModel(RiskModel):
         """
         return FactorRiskModel(
             factor_exposures=self._factor_exposures.copy(),
-            factor_covariances=self._factor_covariances.copy(),
             factor_returns=self._factor_returns.copy(),
             residual_returns=self._residual_returns.copy(),
             **self._config.dict(),

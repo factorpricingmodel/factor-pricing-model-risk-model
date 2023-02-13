@@ -218,34 +218,10 @@ def expected_residual_returns(dates, instruments):
     }
 
 
-@pytest.fixture(scope="module")
-def expected_factor_covariances(dates, factors):
-    values = {
-        5: array([[3.33333333e-02, 1.40814262e-17], [1.40814262e-17, 3.33333333e-02]]),
-        6: array(
-            [[3.33333333e-02, -2.28231612e-18], [-2.28231612e-18, 3.33333333e-02]]
-        ),
-        7: array([[3.33333333e-02, 2.16127524e-18], [2.16127524e-18, 3.33333333e-02]]),
-        8: array([[3.33333333e-02, 1.06125286e-17], [1.06125286e-17, 3.33333333e-02]]),
-        9: array(
-            [[3.33333333e-02, -1.16594080e-17], [-1.16594080e-17, 3.33333333e-02]]
-        ),
-    }
-    return {
-        dates[index]: pd.DataFrame(
-            df,
-            index=factors,
-            columns=factors,
-        )
-        for index, df in values.items()
-    }
-
-
 def test_rolling_factor_risk_model(
     daily_returns,
     expected_factor_exposures,
     expected_factor_returns,
-    expected_factor_covariances,
     expected_residual_returns,
 ):
     model = PCA(
@@ -265,9 +241,6 @@ def test_rolling_factor_risk_model(
         )
         pd.testing.assert_frame_equal(
             value.factor_exposures, expected_factor_exposures[key]
-        )
-        pd.testing.assert_frame_equal(
-            value.factor_covariances, expected_factor_covariances[key]
         )
         pd.testing.assert_frame_equal(
             value.residual_returns, expected_residual_returns[key]

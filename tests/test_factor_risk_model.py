@@ -101,18 +101,10 @@ def residual_returns():
 
 
 @pytest.fixture(scope="module")
-def factor_covariances():
-    return array([[1.11111111e-02, -1.13074741e-18], [-1.13074741e-18, 1.11111111e-02]])
-
-
-@pytest.fixture(scope="module")
-def factor_risk_model_np(
-    factor_exposures, factor_returns, factor_covariances, residual_returns
-):
+def factor_risk_model_np(factor_exposures, factor_returns, residual_returns):
     return FactorRiskModel(
         factor_exposures=factor_exposures,
         factor_returns=factor_returns,
-        factor_covariances=factor_covariances,
         residual_returns=residual_returns,
     )
 
@@ -121,7 +113,6 @@ def factor_risk_model_np(
 def factor_risk_model_pd(
     factor_exposures,
     factor_returns,
-    factor_covariances,
     residual_returns,
     dates,
     instruments,
@@ -132,9 +123,6 @@ def factor_risk_model_pd(
             factor_exposures, index=factors, columns=instruments
         ),
         factor_returns=DataFrame(factor_returns, index=dates, columns=factors),
-        factor_covariances=DataFrame(
-            factor_covariances, index=factors, columns=factors
-        ),
         residual_returns=DataFrame(residual_returns, index=dates, columns=instruments),
     )
 

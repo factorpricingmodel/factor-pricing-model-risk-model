@@ -72,11 +72,6 @@ def factor_returns():
 
 
 @pytest.fixture(scope="module")
-def factor_covariances():
-    return array([[1.11111111e-02, -1.13074741e-18], [-1.13074741e-18, 1.11111111e-02]])
-
-
-@pytest.fixture(scope="module")
 def residual_returns():
     return array(
         [
@@ -98,13 +93,11 @@ def residual_returns():
 def factor_risk_model(
     factor_exposures,
     factor_returns,
-    factor_covariances,
     residual_returns,
 ):
     return FactorRiskModel(
         factor_exposures=factor_exposures,
         factor_returns=factor_returns,
-        factor_covariances=factor_covariances,
         residual_returns=residual_returns,
     )
 
@@ -112,14 +105,10 @@ def factor_risk_model(
 def test_factor_risk_model_transform(daily_returns_np, factor_risk_model):
     transformed_model = factor_risk_model.transform(y=daily_returns_np)
 
-    # No change on factor returns and factor covariances
+    # No change on factor returns
     np.testing.assert_almost_equal(
         factor_risk_model.factor_returns,
         transformed_model.factor_returns,
-    )
-    np.testing.assert_almost_equal(
-        factor_risk_model.factor_covariances,
-        transformed_model.factor_covariances,
     )
     # Factor exposures of the estimation universe should be the same
     np.testing.assert_almost_equal(
