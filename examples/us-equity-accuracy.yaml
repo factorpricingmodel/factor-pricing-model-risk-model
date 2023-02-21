@@ -12,8 +12,8 @@ task:
   model-risk-model:
     output:
       directory: "{output_directory}/model-risk-model"
-      name: ""
-      format: "success"
+      name: "metadata"
+      format: "json"
       load-caller: "fpm_risk_model.pipeline:load_rolling_factor_risk_model"
       load-parameters:
         format: "parquet"

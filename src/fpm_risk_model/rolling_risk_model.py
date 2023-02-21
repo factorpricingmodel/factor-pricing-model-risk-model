@@ -65,6 +65,13 @@ class RollingRiskModel:
         self._values = values
         self._config = self.ConfigClass(window=window, show_progress=show_progress)
 
+    @property
+    def config(self):
+        """
+        Return the configuration object.
+        """
+        return self._config
+
     def get(self, name, **kwargs) -> RiskModel:
         """
         Return a factor risk model from the given name / key.

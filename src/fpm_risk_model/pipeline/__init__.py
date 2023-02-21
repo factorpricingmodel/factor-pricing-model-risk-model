@@ -44,7 +44,7 @@ def generate_rolling_factor_risk_model(
 
 def dump_factor_risk_model(
     risk_model: FactorRiskModel,
-    success_file: str,
+    metadata_file: str,
     format: str,
     parameters: Optional[Dict] = None,
 ):
@@ -53,7 +53,7 @@ def dump_factor_risk_model(
     """
     parameters = parameters or {}
     dumper = f"to_{format}"
-    output_directory = dirname(success_file)
+    output_directory = dirname(metadata_file)
 
     def _dump(name, data, output_directory):
         if isinstance(data, pd.DataFrame):
@@ -84,24 +84,18 @@ def dump_factor_risk_model(
     )
 
     _dump(
-        name="factor-covariances",
-        data=risk_model.factor_covariances,
-        output_directory=output_directory,
-    )
-
-    _dump(
         name="residual-returns",
         data=risk_model.residual_returns,
         output_directory=output_directory,
     )
 
-    with open(success_file, mode="w") as f:
+    with open(metadata_file, mode="w") as f:
         f.write(json.dumps({"parameters": risk_model.asdict()}))
 
 
 def dump_rolling_factor_risk_model(
     rolling_risk_model: RollingFactorRiskModel,
-    success_file: str,
+    metadata_file: str,
     format: str,
     parameters: Optional[Dict] = None,
     show_progress: Optional[bool] = True,
@@ -122,29 +116,29 @@ def dump_rolling_factor_risk_model(
         keys.append(key_name)
         dump_factor_risk_model(
             risk_model=model,
-            success_file=fsjoin(
-                dirname(success_file),
+            metadata_file=fsjoin(
+                dirname(metadata_file),
                 key_name,
-                basename(success_file),
+                basename(metadata_file),
             ),
             format=format,
             parameters=parameters,
         )
 
-    with open(success_file, mode="w") as f:
+    with open(metadata_file, mode="w") as f:
         f.write(
             json.dumps({"directories": keys, "parameters": rolling_risk_model.asdict()})
         )
 
 
 def load_factor_risk_model(
-    success_file: str,
+    metadata_file: str,
     format: str,
     parameters: Optional[Dict] = None,
 ):
     parameters = parameters or {}
     loader = getattr(pd, f"read_{format}")
-    output_directory = dirname(success_file)
+    output_directory = dirname(metadata_file)
 
     def _load(name):
         output_path = fsjoin(output_directory, f"{name}.{format}")
@@ -152,30 +146,28 @@ def load_factor_risk_model(
 
     factor_exposures = _load("factor-exposures")
     factor_returns = _load("factor-returns")
-    factor_covariances = _load("factor-covariances")
     residual_returns = _load("residual-returns")
     return FactorRiskModel(
         factor_exposures=factor_exposures,
         factor_returns=factor_returns,
-        factor_covariances=factor_covariances,
         residual_returns=residual_returns,
     )
 
 
 def load_rolling_factor_risk_model(
-    success_file: str,
+    metadata_file: str,
     format: str,
     parameters: Optional[Dict] = None,
     show_progress: Optional[bool] = True,
 ):
-    with open(success_file) as f:
+    with open(metadata_file) as f:
         metadata = json.load(f)
     try:
         directories = metadata["directories"]
     except KeyError:
         raise RuntimeError(
             "Failed to retrieve the list of directories from "
-            f"the success file {success_file}. Please ensure "
+            f"the metadata file {metadata_file}. Please ensure "
             "the directory was exported as rolling factor risk "
             "model format"
         )
@@ -185,17 +177,17 @@ def load_rolling_factor_risk_model(
 
         directories = tqdm(directories, leave=False)
 
-    output_directory = dirname(success_file)
-    success_file_name = basename(success_file)
+    output_directory = dirname(metadata_file)
+    metadata_file_name = basename(metadata_file)
     values = {}
     for directory in directories:
-        risk_model_success_file = fsjoin(
+        risk_model_metadata_file = fsjoin(
             output_directory,
             directory,
-            success_file_name,
+            metadata_file_name,
         )
         risk_model = load_factor_risk_model(
-            success_file=risk_model_success_file, format=format, parameters=parameters
+            metadata_file=risk_model_metadata_file, format=format, parameters=parameters
         )
         values[pd.Timestamp(directory)] = risk_model
 

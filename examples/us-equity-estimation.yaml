@@ -38,8 +38,8 @@ task:
       window: 252
       show_progress: true
     output:
-      name: ""
-      format: "success"
+      name: "metadata"
+      format: "json"
       dump-caller: "fpm_risk_model.pipeline:dump_rolling_factor_risk_model"
       dump-parameters:
         format: "parquet"

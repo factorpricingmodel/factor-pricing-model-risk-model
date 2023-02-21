@@ -1,7 +1,7 @@
 from typing import Optional, Union
 
-import numpy as np
-import pandas as pd
+from numpy import ndarray
+from pandas import DataFrame
 from sklearn.decomposition import PCA as sklearn_PCA
 
 from ..factor_risk_model import FactorRiskModel
@@ -61,7 +61,7 @@ class PCA(FactorRiskModel):
         )
         self._model = sklearn_PCA(n_components=n_components)
 
-    def fit(self, X: Union[np.ndarray, pd.DataFrame]) -> object:
+    def fit(self, X: Union[ndarray, DataFrame]) -> object:
         """
         Fit the returns into the risk model.
 
@@ -79,9 +79,9 @@ class PCA(FactorRiskModel):
           The object itself.
         """
         # First convert all the numpy ndarray type first
-        if isinstance(X, pd.DataFrame):
+        if isinstance(X, DataFrame):
             X_fit = X.values
-        elif isinstance(X, np.ndarray):
+        elif isinstance(X, ndarray):
             X_fit = X
         else:
             raise TypeError(
@@ -89,15 +89,18 @@ class PCA(FactorRiskModel):
                 f"not {X.__class__.__name__}"
             )
 
+        # Initialize the engine
+        eg = self._engine
+
         # Normalize the instrument return by full history mean
         if self._config.demean:
-            X_mean = np.array(np.mean(X, axis=0))[np.newaxis, :]
-            X_fit = np.subtract(X_fit, X_mean)
+            X_mean = eg.array(eg.mean(X, axis=0))[eg.newaxis, :]
+            X_fit = eg.subtract(X_fit, X_mean)
 
         # Remove the instruments without any returns always
         if self._config.speedup:
             # Select the instruments of which the returns are not always 0
-            X_reindex = ~np.all(np.abs(X_fit) < 1e-20, axis=0)
+            X_reindex = ~eg.all(eg.abs(X_fit) < 1e-20, axis=0)
             X_fit = X_fit[:, X_reindex]
 
         # Fit with skilearn PCA on the return matrix (T, N)
@@ -109,9 +112,9 @@ class PCA(FactorRiskModel):
         # Eigenvectors
         U_m = self._model.components_
         # Exposure matrix (n, N)
-        B = np.multiply(
+        B = eg.multiply(
             U_m,
-            np.array(self._model.singular_values_ * np.sqrt(T))[:, np.newaxis],
+            eg.array(self._model.singular_values_ * eg.sqrt(T))[:, eg.newaxis],
         )
         # Factor matrix (T, n)
         wls = WLS()
@@ -122,21 +125,21 @@ class PCA(FactorRiskModel):
         # Fill back the instruments which don't have any returns
         # with 0.0 exposures and residual returns
         if self._config.speedup:
-            B_reindex = np.zeros((self._config.n_components, N))
-            residual_returns_reindex = np.zeros(X.shape)
+            B_reindex = eg.zeros((self._config.n_components, N))
+            residual_returns_reindex = eg.zeros(X.shape)
             B_reindex[:, X_reindex] = B[:, :]
             residual_returns_reindex[:, X_reindex] = residual_returns[:, :]
             B = B_reindex
             residual_returns = residual_returns_reindex
 
         # Convert back to dataframe if necessary
-        if isinstance(X, pd.DataFrame):
+        if isinstance(X, DataFrame):
             factor_index = [
                 f"factor_{index + 1}" for index in range(self._config.n_components)
             ]
-            B = pd.DataFrame(B, index=factor_index, columns=X.columns)
-            F = pd.DataFrame(F, index=X.index, columns=factor_index)
-            residual_returns = pd.DataFrame(
+            B = DataFrame(B, index=factor_index, columns=X.columns)
+            F = DataFrame(F, index=X.index, columns=factor_index)
+            residual_returns = DataFrame(
                 residual_returns, index=X.index, columns=X.columns
             )
 

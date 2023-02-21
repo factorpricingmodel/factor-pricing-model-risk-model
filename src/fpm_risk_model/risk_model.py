@@ -48,10 +48,17 @@ class RiskModel(ABC):
             If True, the instruments outside of the universe in each
             period may not be filtered out.
         """
-        self._engine = engine or NumpyEngine
+        self._engine = engine or NumpyEngine()
         self._config = self.ConfigClass(
             show_all_instruments=show_all_instruments, **kwargs
         )
+
+    @property
+    def config(self):
+        """
+        Return the configuration object.
+        """
+        return self._config
 
     @abstractmethod
     def cov(self, **kwargs) -> ndarray:

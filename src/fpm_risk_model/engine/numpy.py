@@ -1,6 +1,12 @@
+from typing import Any
+
+import numpy
+
+
 class NumpyEngine:
     """
     Numpy Engine.
     """
 
-    from numpy import array, cov, diagonal, mean, newaxis, sqrt, sum
+    def __getattribute__(self, __name: str) -> Any:
+        return getattr(numpy, __name)
