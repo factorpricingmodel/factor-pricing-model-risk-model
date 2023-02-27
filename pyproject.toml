@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "factor-pricing-model-risk-model"
-version = "2023.1.0"
+version = "2023.2.0"
 description = "Package to build risk models for factor pricing model"
 authors = ["Factor Pricing Model <factor.pricing.model@gmail.com>"]
 license = "MIT"

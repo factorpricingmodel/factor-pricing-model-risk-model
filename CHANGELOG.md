@@ -4,6 +4,10 @@ All noteable changes to this project will be documented in this file.
 
 <!--next-version-placeholder-->
 
+## v2023.2.0 (2023-02-27)
+### Documentation
+* Correct example configuration ([`00e136d`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/00e136d59bd41634ce109c13652ba32d02c16d3a))
+
 ## v2023.1.0 (2023-02-12)
 ### Feature
 * Introduce cov half life ([`92d96dc`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/92d96dc5449e01dca49f0dce2d159891e082022e))
