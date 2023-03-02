@@ -1,7 +1,7 @@
 from typing import Optional, Union
 
 from numpy import ndarray
-from pandas import DataFrame
+from pandas import DataFrame, Series
 from sklearn.decomposition import PCA as sklearn_PCA
 
 from ..factor_risk_model import FactorRiskModel
@@ -61,7 +61,11 @@ class PCA(FactorRiskModel):
         )
         self._model = sklearn_PCA(n_components=n_components)
 
-    def fit(self, X: Union[ndarray, DataFrame]) -> object:
+    def fit(
+        self,
+        X: Union[ndarray, DataFrame],
+        weights: Optional[Union[ndarray, Series]] = None,
+    ) -> object:
         """
         Fit the returns into the risk model.
 
@@ -79,15 +83,8 @@ class PCA(FactorRiskModel):
           The object itself.
         """
         # First convert all the numpy ndarray type first
-        if isinstance(X, DataFrame):
-            X_fit = X.values
-        elif isinstance(X, ndarray):
-            X_fit = X
-        else:
-            raise TypeError(
-                "X must be in numpy ndarray or pandas DataFrame type, "
-                f"not {X.__class__.__name__}"
-            )
+        X_fit = self._to_numpy(X)
+        weights_fit = self._to_numpy(weights)
 
         # Initialize the engine
         eg = self._engine
@@ -102,6 +99,8 @@ class PCA(FactorRiskModel):
             # Select the instruments of which the returns are not always 0
             X_reindex = ~eg.all(eg.abs(X_fit) < 1e-20, axis=0)
             X_fit = X_fit[:, X_reindex]
+            if weights_fit is not None:
+                weights_fit = weights_fit[X_reindex]
 
         # Fit with skilearn PCA on the return matrix (T, N)
         self._model.fit(X_fit)
@@ -118,7 +117,7 @@ class PCA(FactorRiskModel):
         )
         # Factor matrix (T, n)
         wls = WLS()
-        F = wls.fit(X=B.T, y=X_fit.T).T
+        F = wls.fit(X=B.T, y=X_fit.T, weights=weights_fit).T
         # Residual returns (N, T)
         residual_returns = X_fit - F @ B
 

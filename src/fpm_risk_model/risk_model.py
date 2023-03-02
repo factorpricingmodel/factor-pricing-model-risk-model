@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Union
 
 from numpy import ndarray
+from pandas import DataFrame, Series
 
 from .config import Config
 from .engine import NumpyEngine
@@ -91,3 +92,20 @@ class RiskModel(ABC):
         Returns a dict representation of the object.
         """
         return self.config.dict()
+
+    @staticmethod
+    def _to_numpy(values: Union[ndarray, DataFrame]) -> ndarray:
+        """
+        Convert the values to a numpy array
+        """
+        if values is None:
+            return values
+        elif isinstance(values, (DataFrame, Series)):
+            return values.values
+        elif isinstance(values, ndarray):
+            return values
+        else:
+            raise TypeError(
+                "Expect either pandas DataFrame or numpy array, "
+                f"but got {values.__class__.__name__}"
+            )

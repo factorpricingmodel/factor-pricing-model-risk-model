@@ -5,6 +5,13 @@ from numpy.linalg import pinv
 
 
 class WLS:
+    """
+    Weighted least squares problem solver.
+
+    The solver is to run regression with weighted least squares
+    objective.
+    """
+
     def __init__(self, executor: str = "closed"):
         """
         Construct

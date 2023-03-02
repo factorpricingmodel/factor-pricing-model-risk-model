@@ -6,16 +6,33 @@ from os.path import join as fsjoin
 from typing import Any, Dict, Optional
 
 import pandas as pd
+from pandas import DataFrame
 
 from ..factor_risk_model import FactorRiskModel
 from ..rolling_factor_risk_model import RollingFactorRiskModel
 
 
 def generate_factor_risk_model(
-    model: str, data: pd.DataFrame, **kwargs
+    model: str, data: DataFrame, **kwargs
 ) -> FactorRiskModel:
     """
     Generate factor risk model
+
+    Parameters
+    ----------
+    model : str
+      Model name supported in statistics module. Supported
+      value is `pca`.
+
+    data: DataFrame
+      Dataframe of returns of valid instruments, in a dimension
+      of (T, N) where N is the number of instruments and T is the
+      of timeframes.
+
+    Returns
+    -------
+    FactorRiskModel
+      A fitted factor risk model.
     """
     model = model.lower().replace("-", "_")
     if model == "pca":
@@ -29,7 +46,11 @@ def generate_factor_risk_model(
 
 
 def generate_rolling_factor_risk_model(
-    model: str, data: pd.DataFrame, model_parameters: Dict[str, Any], **kwargs
+    model: str,
+    data: DataFrame,
+    model_parameters: Dict[str, Any],
+    weights: Optional[DataFrame] = None,
+    **kwargs,
 ) -> RollingFactorRiskModel:
     model = model.lower().replace("-", "_")
     if model == "pca":
@@ -39,7 +60,7 @@ def generate_rolling_factor_risk_model(
     else:
         raise ValueError(f"Model name {model} is not supported")
     rolling_model = RollingFactorRiskModel(model=model, **kwargs)
-    return rolling_model.fit(X=data)
+    return rolling_model.fit(X=data, weights=weights)
 
 
 def dump_factor_risk_model(
@@ -196,7 +217,10 @@ def load_rolling_factor_risk_model(
 
 
 def where_validity(
-    validity: pd.DataFrame, data: pd.DataFrame, fillna: Any = None
+    validity: pd.DataFrame,
+    data: pd.DataFrame,
+    fillna: Any = None,
+    ffill: Optional[bool] = False,
 ) -> pd.DataFrame:
     """
     Return the data for the given universe.
@@ -211,6 +235,8 @@ def where_validity(
       respectively.
     fillna: Any
       Handle nan values which includes data outside of the universe.
+    ffill: Optional[bool]
+      Indicates to forward fill the data. Default is `False`.
 
     Returns
     -------
@@ -218,6 +244,8 @@ def where_validity(
       Dataframe containing the data for the given universe.
     """
     data = data.reindex_like(validity).where(validity)
+    if ffill:
+        data = data.ffill()
     if fillna is not None:
         data = data.fillna(fillna)
     return data

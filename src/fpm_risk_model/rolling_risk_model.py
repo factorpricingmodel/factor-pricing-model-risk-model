@@ -96,7 +96,7 @@ class RollingRiskModel:
         """
         return self._values.items()
 
-    def fit(self, X: DataFrame) -> object:
+    def fit(self, X: DataFrame, weights: Optional[DataFrame] = None) -> object:
         """
         Fit the model.
 
@@ -105,6 +105,10 @@ class RollingRiskModel:
         X: DataFrame
             The instrument returns of which its index and columns
             are the date / time and return values.
+
+        weights: DataFrame
+            The weights of the instruments, same dimension as the
+            instrument returns.
 
         Returns
         -------
@@ -132,7 +136,18 @@ class RollingRiskModel:
                     index_name = X.index[end_index - 1]
                 else:
                     raise TypeError(f"Invalid type of X {X.__class__.__name__}")
-                values[index_name] = self._model.fit(X=X_input).copy()
+
+                if weights is None:
+                    weights_input = None
+                elif isinstance(weights, DataFrame):
+                    weights_input = weights.loc[index_name]
+                else:
+                    raise TypeError(
+                        f"Invalid type of weights {weights.__class__.__name__}"
+                    )
+                values[index_name] = self._model.fit(
+                    X=X_input, weights=weights_input
+                ).copy()
         except Exception as exc:
             raise RuntimeError(
                 f"Failed to fit at the index {index} due to error: {exc}"

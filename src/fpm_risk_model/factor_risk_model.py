@@ -89,9 +89,19 @@ class FactorRiskModel(RiskModel):
         """
         return self._residual_returns
 
-    def fit(self, X: ndarray) -> object:
+    def fit(self, X: ndarray, weights: Optional[ndarray] = None) -> object:
         """
         Fit the model.
+
+        Parameters
+        ----------
+        X : ndarray
+          Input array of shape (T, N) where N is the number of
+          instruments and T is the number of timeframes.
+
+        weights: Optional[ndarray]
+          Weights array of shape (N,) where N is the number of
+          instruments.
         """
         pass
 
