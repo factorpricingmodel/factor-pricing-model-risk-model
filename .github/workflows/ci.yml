@@ -36,11 +36,9 @@ jobs:
       fail-fast: false
       matrix:
         python-version:
-          - "3.7"
-          - "3.8"
           # Not support 3.9 and 3.10 temporarily due to black on macOS
-          # - "3.9"
-          # - "3.10"
+          - "3.9"
+          - "3.10"
         os:
           - ubuntu-latest
           - macOS-latest
