@@ -4,6 +4,10 @@ All noteable changes to this project will be documented in this file.
 
 <!--next-version-placeholder-->
 
+## v2023.3.0 (2023-03-10)
+### Feature
+* Support WLS in PCA statistical risk model ([`71fc3e2`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/71fc3e2a32b2463eed822eb43184b6593d5073a3))
+
 ## v2023.2.0 (2023-02-27)
 ### Documentation
 * Correct example configuration ([`00e136d`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/00e136d59bd41634ce109c13652ba32d02c16d3a))
