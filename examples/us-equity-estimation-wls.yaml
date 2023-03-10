@@ -1,0 +1,62 @@
+metadata:
+  output:
+    directory: "{output_directory}/estimation-wls-risk-model"
+definitions:
+  output-cache: &output-cache
+    directory: null
+  output-parquet: &output-parquet
+    format: "parquet"
+    dump-caller: "object.to_parquet"
+    load-caller: "pandas:read_parquet"
+task:
+  validity:
+    output:
+      directory: "{output_directory}/estimation-universe"
+      <<: *output-parquet
+  adjusted-close:
+    output:
+      directory: "{output_directory}/xs_data"
+      <<: *output-parquet
+  marketcap:
+    output:
+      directory: "{output_directory}/xs_data"
+      <<: *output-parquet
+  adjusted-close-return:
+    object: !data adjusted-close
+    caller: "object.pct_change"
+    output: *output-cache
+  validity-adjusted-close-return:
+    caller: "fpm_risk_model.pipeline:where_validity"
+    parameters:
+      validity: !data validity
+      data: !data adjusted-close-return
+      fillna: 0.0
+    output: *output-cache
+  validity-marketcap:
+    caller: "fpm_risk_model.pipeline:where_validity"
+    parameters:
+      validity: !data validity
+      data: !data marketcap
+      ffill: True
+    output: *output-cache
+  validity-marketcap-log:
+    caller: "numpy:log10"
+    parameters:
+      - !data validity-marketcap
+    output: *output-cache
+  factor-risk-model:
+    caller: "fpm_risk_model.pipeline:generate_rolling_factor_risk_model"
+    parameters:
+      model: "pca"
+      model_parameters:
+        n_components: 20
+      data: !data validity-adjusted-close-return
+      weights: !data validity-marketcap-log
+      window: 252
+      show_progress: true
+    output:
+      name: "metadata"
+      format: "json"
+      dump-caller: "fpm_risk_model.pipeline:dump_rolling_factor_risk_model"
+      dump-parameters:
+        format: "parquet"

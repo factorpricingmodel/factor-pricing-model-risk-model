@@ -1,0 +1,49 @@
+metadata:
+  output:
+    directory: "{output_directory}/model-wls-risk-model"
+definitions:
+  output-cache: &output-cache
+    directory: null
+  output-parquet: &output-parquet
+    format: "parquet"
+    dump-caller: "object.to_parquet"
+    load-caller: "pandas:read_parquet"
+task:
+  estimation-risk-model:
+    output:
+      directory: "{output_directory}/estimation-wls-risk-model"
+      name: "metadata"
+      format: "json"
+      load-caller: "fpm_risk_model.pipeline:load_rolling_factor_risk_model"
+      load-parameters:
+        format: "parquet"
+  validity:
+    output:
+      directory: "{output_directory}/model-universe"
+      <<: *output-parquet
+  adjusted-close:
+    output:
+      directory: "{output_directory}/xs_data"
+      <<: *output-parquet
+  adjusted-close-return:
+    object: !data adjusted-close
+    caller: "object.pct_change"
+    output: *output-cache
+  validity-adjusted-close-return:
+    caller: "fpm_risk_model.pipeline:where_validity"
+    parameters:
+      validity: !data validity
+      data: !data adjusted-close-return
+      fillna: 0.0
+    output: *output-cache
+  transformed-risk-model:
+    object: !data estimation-risk-model
+    caller: "object.transform"
+    parameters:
+      y: !data validity-adjusted-close-return
+    output:
+      name: "metadata"
+      format: "json"
+      dump-caller: "fpm_risk_model.pipeline:dump_rolling_factor_risk_model"
+      dump-parameters:
+        format: "parquet"

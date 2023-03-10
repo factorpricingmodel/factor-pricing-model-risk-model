@@ -25,6 +25,12 @@ def daily_returns_np():
 
 
 @pytest.fixture(scope="module")
+def weights():
+    marketcap = np.array([6963.31246279, 7302.6302949, 3850.93690851, 297268.90940704])
+    return np.log10(marketcap)
+
+
+@pytest.fixture(scope="module")
 def instruments():
     return ["A", "AAL", "AAP", "AAPL"]
 
@@ -72,6 +78,24 @@ def expected_factor_returns():
 
 
 @pytest.fixture(scope="module")
+def expected_weighted_factor_returns():
+    return array(
+        [
+            [0.06263099, -0.15839505],
+            [0.01977132, 0.10096354],
+            [-0.05996935, 0.17923524],
+            [0.12202329, 0.13606452],
+            [-0.03775803, -0.04905719],
+            [-0.09060725, -0.04063266],
+            [-0.13028169, 0.00383681],
+            [0.14254596, -0.05478525],
+            [-0.1364299, -0.07191067],
+            [0.10807466, -0.0453193],
+        ]
+    )
+
+
+@pytest.fixture(scope="module")
 def expected_residual_returns():
     return array(
         [
@@ -85,6 +109,24 @@ def expected_residual_returns():
             [-0.00071556, 0.00033674, 0.0, 0.00019688],
             [0.01124235, -0.00529063, 0.0, -0.00309323],
             [0.01512673, -0.00711861, 0.0, -0.00416198],
+        ]
+    )
+
+
+@pytest.fixture(scope="module")
+def expected_weighted_residual_returns():
+    return array(
+        [
+            [-0.00430859, 0.00201677, 0.0, 0.00083234],
+            [0.0105816, -0.00495305, 0.0, -0.00204418],
+            [0.00558506, -0.00261426, 0.0, -0.00107893],
+            [-0.0128986, 0.00603759, 0.0, 0.00249178],
+            [-0.00432081, 0.00202249, 0.0, 0.0008347],
+            [-0.01887879, 0.00883681, 0.0, 0.00364705],
+            [-0.00189153, 0.00088539, 0.0, 0.00036541],
+            [-0.00072889, 0.00034118, 0.0, 0.00014081],
+            [0.01145189, -0.00536041, 0.0, -0.0022123],
+            [0.01540867, -0.00721251, 0.0, -0.00297668],
         ]
     )
 
@@ -146,6 +188,44 @@ def test_pca_pd(
         pca.residual_returns,
         pd.DataFrame(
             expected_residual_returns,
+            columns=instruments,
+            index=dates,
+        ),
+    )
+
+
+def test_weighted_pca_pd(
+    daily_returns_pd,
+    weights,
+    expected_factor_exposures,
+    expected_weighted_factor_returns,
+    expected_weighted_residual_returns,
+    instruments,
+    dates,
+):
+    pca = PCA(n_components=2, demean=True, speedup=True)
+    pca.fit(X=daily_returns_pd, weights=weights)
+
+    pd.testing.assert_frame_equal(
+        pca.factor_exposures,
+        pd.DataFrame(
+            expected_factor_exposures,
+            index=pca.factor_exposures.index,
+            columns=instruments,
+        ),
+    )
+    pd.testing.assert_frame_equal(
+        pca.factor_returns,
+        pd.DataFrame(
+            expected_weighted_factor_returns,
+            index=dates,
+            columns=pca.factor_returns.columns,
+        ),
+    )
+    pd.testing.assert_frame_equal(
+        pca.residual_returns,
+        pd.DataFrame(
+            expected_weighted_residual_returns,
             columns=instruments,
             index=dates,
         ),
