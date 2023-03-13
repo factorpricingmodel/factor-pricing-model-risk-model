@@ -39,8 +39,8 @@ task:
       data: !data marketcap
       ffill: True
     output: *output-cache
-  validity-marketcap-log:
-    caller: "numpy:log10"
+  validity-marketcap-sqrt:
+    caller: "numpy:sqrt"
     parameters:
       - !data validity-marketcap
     output: *output-cache
@@ -51,7 +51,7 @@ task:
       model_parameters:
         n_components: 20
       data: !data validity-adjusted-close-return
-      weights: !data validity-marketcap-log
+      weights: !data validity-marketcap-sqrt
       window: 252
       show_progress: true
     output:
