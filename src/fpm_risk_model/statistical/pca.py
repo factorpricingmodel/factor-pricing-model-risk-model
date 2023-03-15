@@ -117,9 +117,9 @@ class PCA(FactorRiskModel):
         )
         # Factor matrix (T, n)
         wls = WLS()
-        F = wls.fit(X=B.T, y=X_fit.T, weights=weights_fit).T
-        # Residual returns (N, T)
-        residual_returns = X_fit - F @ B
+        wls_result = wls.fit(X=B.T, y=X_fit.T, weights=weights_fit)
+        F = wls_result.beta.T
+        residual_returns = wls_result.alpha.T
 
         # Fill back the instruments which don't have any returns
         # with 0.0 exposures and residual returns

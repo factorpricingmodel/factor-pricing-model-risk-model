@@ -43,8 +43,22 @@ def y():
 
 def test_ewls(X, y):
     regressor = EWLS(half_life=5)
-    W = regressor.fit(X=X, y=y)
-    expected_W = array(
+    result = regressor.fit(X=X, y=y)
+    expected_alpha = array(
+        [
+            [-0.0103137, -0.0012248],
+            [-0.05192872, -0.00616674],
+            [-0.06482001, -0.00769763],
+            [-0.01314395, -0.00156089],
+            [-0.03407309, -0.00404631],
+            [-0.02737458, -0.00325084],
+            [-0.05511041, -0.00654458],
+            [-0.0091021, -0.00108091],
+            [-0.06490443, -0.00770765],
+            [-0.03255917, -0.00386653],
+        ]
+    )
+    expected_beta = array(
         [
             [-0.35866289, 0.47185859],
             [-1.93109561, 4.05018254],
@@ -52,4 +66,5 @@ def test_ewls(X, y):
             [-2.01859896, -5.68956708],
         ]
     )
-    assert_almost_equal(W, expected_W)
+    assert_almost_equal(result.alpha, expected_alpha)
+    assert_almost_equal(result.beta, expected_beta)

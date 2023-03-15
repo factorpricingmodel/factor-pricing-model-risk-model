@@ -43,8 +43,22 @@ def y():
 
 def test_wls(X, y):
     regressor = WLS()
-    W = regressor.fit(X=X, y=y)
-    expected_W = array(
+    result = regressor.fit(X=X, y=y)
+    expected_alpha = array(
+        [
+            [-0.02086442, -0.00247773],
+            [-0.04388078, -0.00521101],
+            [-0.04843571, -0.00575193],
+            [0.00681982, 0.00080988],
+            [-0.03525375, -0.00418651],
+            [-0.02324037, -0.00275988],
+            [-0.05289947, -0.00628202],
+            [-0.01071973, -0.00127301],
+            [-0.07423966, -0.00881624],
+            [-0.03900638, -0.00463216],
+        ]
+    )
+    expected_beta = array(
         [
             [-0.1476475, 0.4969175],
             [-2.3958355, 3.9949929],
@@ -53,4 +67,5 @@ def test_wls(X, y):
         ]
     )
 
-    assert_almost_equal(W, expected_W)
+    assert_almost_equal(result.alpha, expected_alpha)
+    assert_almost_equal(result.beta, expected_beta)

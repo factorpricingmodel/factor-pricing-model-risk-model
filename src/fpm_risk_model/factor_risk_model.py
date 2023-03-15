@@ -203,8 +203,9 @@ class FactorRiskModel(RiskModel):
         regressor = regressor or WLS()
 
         # Transform the factor exposures from the y input
-        factor_exposures = regressor.fit(X=X, y=y_input)
-        residual_returns = y_input - X @ factor_exposures
+        regressor_result = regressor.fit(X=X, y=y_input)
+        factor_exposures = regressor_result.beta
+        residual_returns = regressor_result.alpha
 
         if isinstance(self.factor_returns, DataFrame):
             factor_exposures = DataFrame(
