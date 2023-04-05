@@ -1,6 +1,6 @@
 metadata:
   output:
-    directory: "{output_directory}/estimation-risk-model"
+    directory: "{output_directory}/model-risk-model/apca"
 definitions:
   output-cache: &output-cache
     directory: null
@@ -9,9 +9,17 @@ definitions:
     dump-caller: "object.to_parquet"
     load-caller: "pandas:read_parquet"
 task:
+  estimation-risk-model:
+    output:
+      directory: "{output_directory}/estimation-risk-model/apca"
+      name: "metadata"
+      format: "json"
+      load-caller: "fpm_risk_model.pipeline:load_rolling_factor_risk_model"
+      load-parameters:
+        format: "parquet"
   validity:
     output:
-      directory: "{output_directory}/estimation-universe"
+      directory: "{output_directory}/model-universe"
       <<: *output-parquet
   adjusted-close:
     output:
@@ -28,15 +36,11 @@ task:
       data: !data adjusted-close-return
       fillna: 0.0
     output: *output-cache
-  factor-risk-model:
-    caller: "fpm_risk_model.pipeline:generate_rolling_factor_risk_model"
+  transformed-risk-model:
+    object: !data estimation-risk-model
+    caller: "object.transform"
     parameters:
-      model: "pca"
-      model_parameters:
-        n_components: 20
-      data: !data validity-adjusted-close-return
-      window: 252
-      show_progress: true
+      y: !data validity-adjusted-close-return
     output:
       name: "metadata"
       format: "json"

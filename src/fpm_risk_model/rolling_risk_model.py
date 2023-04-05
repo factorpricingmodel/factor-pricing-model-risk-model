@@ -145,9 +145,12 @@ class RollingRiskModel:
                     raise TypeError(
                         f"Invalid type of weights {weights.__class__.__name__}"
                     )
-                values[index_name] = self._model.fit(
-                    X=X_input, weights=weights_input
-                ).copy()
+
+                params = {}
+                if weights_input is not None:
+                    params["weights"] = weights_input
+
+                values[index_name] = self._model.fit(X=X_input, **params).copy()
         except Exception as exc:
             raise RuntimeError(
                 f"Failed to fit at the index {index} due to error: {exc}"

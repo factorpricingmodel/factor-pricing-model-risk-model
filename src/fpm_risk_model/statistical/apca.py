@@ -55,7 +55,6 @@ class APCA(FactorRiskModel):
         self,
         X: Union[ndarray, DataFrame],
         atol: float = 1e-10,
-        max_iterations: int = 10,
     ) -> object:
         """
         Fit the returns into the risk model.
@@ -67,8 +66,6 @@ class APCA(FactorRiskModel):
           and the index is the date / time in ascending order.
           For example, if there are N instruments and T days of
           returns, the input is with the dimension of (T, N).
-        max_iterations: Optional[int]
-            Maximum number of iterations.
 
         Returns
         -------
@@ -95,30 +92,17 @@ class APCA(FactorRiskModel):
         residual_returns = X_fit
         scaled_X_fit = X_fit
 
-        for _ in range(max_iterations):
-            # Factor model - R = B @ F + residual_returns
-            # Fit with skilearn PCA on the return matrix (T, N) in t-space
-            self._model.fit(scaled_X_fit.T)
-            # Eigenvectors
-            U_m = self._model.components_
-            # Just choose F = U_m ^T (Shape = (T, n))
-            F = U_m.T
+        # Factor model - R = B @ F + residual_returns
+        # Fit with skilearn PCA on the return matrix (T, N) in t-space
+        self._model.fit(scaled_X_fit.T)
+        # Eigenvectors
+        U_m = self._model.components_
+        # Just choose F = U_m ^T (Shape = (T, n))
+        F = U_m.T
 
-            # B^T = (F @ F^T)^{-1} @ F @ R^T
-            # B = U_m @ R (Shape = (n, N))
-            B = F.T @ scaled_X_fit
-            new_residual_returns = scaled_X_fit - F @ B
-            # asset specific variances - delta^2 = diag(residual_returns^2) / T
-            specific_vars = eg.var(new_residual_returns, axis=0, ddof=0)
-            # R^* = delta^{-1} @ R
-            scaled_X_fit = scaled_X_fit / eg.sqrt(specific_vars)[eg.newaxis, :]
-
-            if eg.sum(eg.abs(new_residual_returns - residual_returns)) < atol:
-                break
-
-            residual_returns = new_residual_returns
-
-        # Reuse F and recompute B and residual returns on unscaled returns
+        # B^T = (F @ F^T)^{-1} @ F @ R^T
+        # B = U_m @ R (Shape = (n, N))
+        # B = F.T @ scaled_X_fit
         wls = WLS()
         wls_result = wls.fit(X=F, y=X_fit)
         B = wls_result.beta

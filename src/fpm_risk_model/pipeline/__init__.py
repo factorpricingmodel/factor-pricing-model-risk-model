@@ -39,6 +39,10 @@ def generate_factor_risk_model(
         from ..statistical.pca import PCA
 
         model = PCA(**kwargs)
+    elif model == "apca":
+        from ..statistical.apca import APCA
+
+        model = APCA(**kwargs)
     else:
         raise ValueError(f"Model name {model} is not supported")
 
@@ -57,10 +61,19 @@ def generate_rolling_factor_risk_model(
         from ..statistical.pca import PCA
 
         model = PCA(**model_parameters)
+    elif model == "apca":
+        from ..statistical.apca import APCA
+
+        model = APCA(**model_parameters)
     else:
         raise ValueError(f"Model name {model} is not supported")
     rolling_model = RollingFactorRiskModel(model=model, **kwargs)
-    return rolling_model.fit(X=data, weights=weights)
+
+    params = {}
+    if weights is not None:
+        params["weights"] = weights
+
+    return rolling_model.fit(X=data, **params)
 
 
 def dump_factor_risk_model(
