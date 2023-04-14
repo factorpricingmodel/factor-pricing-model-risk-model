@@ -89,12 +89,9 @@ class APCA(FactorRiskModel):
         X_reindex = ~eg.all(eg.abs(X_fit) < 1e-20, axis=0)
         X_fit = X_fit[:, X_reindex]
 
-        residual_returns = X_fit
-        scaled_X_fit = X_fit
-
         # Factor model - R = B @ F + residual_returns
         # Fit with skilearn PCA on the return matrix (T, N) in t-space
-        self._model.fit(scaled_X_fit.T)
+        self._model.fit(X_fit.T)
         # Eigenvectors
         U_m = self._model.components_
         # Just choose F = U_m ^T (Shape = (T, n))

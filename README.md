@@ -143,12 +143,12 @@ compute_bias_statistics(
 
 The following major features will be enhanced
 
-- Factor exposures computation from factor returns (Q1 2023)
-- Shrinking covariance (Q1 2023)
-- Exponential decay weighted least squares regression (Q1-Q2 2023)
-- Multiple types of running engine, e.g. Tensorflow (Q1-Q2 2023)
-- Multi-asset class factor model (Q2 2023)
-- Fundamental type risk model (Q3 2023)
+- Factor exposures computation from factor returns (Q2 2023)
+- Shrinking covariance (Q2 2023)
+- Exponential decay weighted least squares regression (Q3 2023)
+- Multiple types of running engine, e.g. Tensorflow (Q3 2023)
+- Multi-asset class factor model (Q3 2023)
+- Fundamental type risk model (Q4 2023)
 
 ## Contribution
 

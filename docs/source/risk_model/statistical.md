@@ -9,4 +9,5 @@ principal components analysis (PCA)
 :maxdepth: 2
 
 statistical/pca
+statistical/apca
 ```
