@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Dict, Iterable, Optional, Tuple
 
-from pandas import DataFrame
+from pandas import DataFrame, Timestamp
 
 from .config import Config
 from .risk_model import RiskModel
@@ -76,7 +76,10 @@ class RollingRiskModel:
         """
         Return a factor risk model from the given name / key.
         """
-        return self._values.get(name, **kwargs)
+        try:
+            name = Timestamp(name)
+        finally:
+            return self._values.get(name, **kwargs)
 
     def keys(self) -> Iterable[datetime]:
         """
@@ -96,7 +99,12 @@ class RollingRiskModel:
         """
         return self._values.items()
 
-    def fit(self, X: DataFrame, weights: Optional[DataFrame] = None) -> object:
+    def fit(
+        self,
+        X: DataFrame,
+        validity: Optional[DataFrame] = None,
+        weights: Optional[DataFrame] = None,
+    ) -> object:
         """
         Fit the model.
 
@@ -105,6 +113,9 @@ class RollingRiskModel:
         X: DataFrame
             The instrument returns of which its index and columns
             are the date / time and return values.
+
+        validity: DataFrame
+            The instrument validity on the date.
 
         weights: DataFrame
             The weights of the instruments, same dimension as the
@@ -146,11 +157,17 @@ class RollingRiskModel:
                         f"Invalid type of weights {weights.__class__.__name__}"
                     )
 
+                if validity is not None:
+                    validity_input = validity.loc[index_name]
+                    X_input = X_input.loc[:, validity_input]
+
                 params = {}
                 if weights_input is not None:
                     params["weights"] = weights_input
 
-                values[index_name] = self._model.fit(X=X_input, **params).copy()
+                values[index_name] = self._model.fit(
+                    X=X_input.fillna(0.0), **params
+                ).copy()
         except Exception as exc:
             raise RuntimeError(
                 f"Failed to fit at the index {index} due to error: {exc}"

@@ -48,7 +48,7 @@ repos:
     rev: v2.2.1
     hooks:
       - id: codespell
-        args: ["-I", ".codespell.whitelist"]
+        args: ["-I", ".codespell.whitelist", "-S", "*.ipynb"]
   - repo: https://github.com/PyCQA/flake8
     rev: 5.0.4
     hooks:
