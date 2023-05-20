@@ -1,3 +1,5 @@
+from tempfile import TemporaryDirectory
+
 import pandas as pd
 import pytest
 from numpy import array
@@ -244,4 +246,41 @@ def test_rolling_factor_risk_model(
         )
         pd.testing.assert_frame_equal(
             value.residual_returns, expected_residual_returns[key]
+        )
+
+
+def test_rolling_factor_risk_model_io_directory(
+    daily_returns,
+):
+    model = PCA(
+        n_components=2,
+        demean=True,
+        speedup=True,
+    )
+    rolling_model = RollingFactorRiskModel(
+        model=model,
+        window=WINDOW,
+        show_progress=False,
+    )
+    rolling_model.fit(X=daily_returns)
+
+    with TemporaryDirectory() as tmpdir:
+        rolling_model.write_directory(tmpdir)
+        target_rolling_model = RollingFactorRiskModel.read_directory(tmpdir)
+
+    for key, value in rolling_model.items():
+        pd.testing.assert_frame_equal(
+            value.factor_returns,
+            target_rolling_model.get(key).factor_returns,
+            check_freq=False,
+        )
+        pd.testing.assert_frame_equal(
+            value.factor_exposures,
+            target_rolling_model.get(key).factor_exposures,
+            check_freq=False,
+        )
+        pd.testing.assert_frame_equal(
+            value.residual_returns,
+            target_rolling_model.get(key).residual_returns,
+            check_freq=False,
         )

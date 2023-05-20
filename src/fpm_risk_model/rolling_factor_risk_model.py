@@ -1,7 +1,13 @@
+import json
+from multiprocessing import cpu_count
+from multiprocessing.pool import ThreadPool
+from os import makedirs
+from os.path import join
 from typing import Optional
 
 from pandas import DataFrame, Timestamp
 
+from .factor_risk_model import FactorRiskModel
 from .rolling_risk_model import RollingRiskModel
 
 
@@ -93,3 +99,80 @@ class RollingFactorRiskModel(RollingRiskModel):
 
         self._values = values
         return self
+
+    def write_directory(
+        self, path: str, format: str = "parquet", workers: int = cpu_count(), **kwargs
+    ):
+        """
+        Write to a directory.
+
+        Parameters
+        ----------
+        path: str
+            Directory path to write to.
+
+        format: str
+            Supported formats. Default is "parquet". Options
+            are "csv", "parquet" and "hdf".
+
+        workers: int
+            Number of workers to use for parallel write operations.
+            Default is the number of CPUs provided.
+
+        **kwargs: dict
+            Optional keyword arguments for the write operation.
+        """
+
+        def _frm_write_directory(item):
+            key, frm = item
+            if isinstance(key, Timestamp):
+                key = key.isoformat()
+            key_path = join(path, key)
+            makedirs(key_path, exist_ok=True)
+            frm.write_directory(key_path, format=format, **kwargs)
+            return key
+
+        with ThreadPool(processes=workers) as pool:
+            keys = pool.map(_frm_write_directory, self._values.items())
+
+        with open(join(path, "metadata.json"), mode="w+") as fp:
+            json.dump({"directories": keys, "parameters": self.asdict()}, fp)
+
+    @classmethod
+    def read_directory(
+        cls, path: str, format: str = "parquet", workers: int = cpu_count(), **kwargs
+    ):
+        """
+        Read a model from directory.
+
+        Parameters
+        ----------
+        path: str
+            Directory path to read from.
+
+        format: str
+            Supported formats. Default is "parquet". Options
+            are "csv", "parquet" and "hdf".
+
+        workers: int
+            Number of workers to use for parallel read operations.
+            Default is the number of CPUs provided.
+
+        **kwargs: dict
+            Optional keyword arguments for the read operation.
+        """
+
+        def _frm_read_directory(key):
+            key_path = join(path, key)
+            value = FactorRiskModel.read_directory(key_path, format=format, **kwargs)
+            return Timestamp(key), value
+
+        with open(join(path, "metadata.json")) as fp:
+            metadata = json.load(fp)
+            directories = metadata["directories"]
+            metadata = metadata["parameters"]
+
+        with ThreadPool(processes=workers) as pool:
+            values = pool.map(_frm_read_directory, directories)
+
+        return cls(values=dict(values), **metadata)

@@ -1,3 +1,5 @@
+from tempfile import TemporaryDirectory
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -229,3 +231,21 @@ def test_factor_risk_model_pd_correlations_halflife(
         columns=valid_instruments,
     )
     pd.testing.assert_frame_equal(corr, expected_corr)
+
+
+def test_factor_risk_model_io_directory(factor_risk_model_pd):
+    with TemporaryDirectory() as tmpdir:
+        factor_risk_model_pd.write_directory(
+            path=tmpdir,
+            format="parquet",
+        )
+
+        target_frm = FactorRiskModel.read_directory(
+            path=tmpdir,
+            format="parquet",
+        )
+
+    pd.testing.assert_frame_equal(
+        target_frm.factor_exposures,
+        factor_risk_model_pd.factor_exposures,
+    )

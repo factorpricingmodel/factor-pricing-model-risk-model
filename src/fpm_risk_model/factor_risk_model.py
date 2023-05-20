@@ -1,3 +1,5 @@
+import json
+from os.path import join
 from typing import Optional
 
 from numpy import any, diag_indices_from, nan, ndarray
@@ -289,3 +291,69 @@ class FactorRiskModel(RiskModel):
             cov = DataFrame(cov, index=instruments, columns=instruments)
 
         return cov
+
+    def write_directory(self, path: str, format="parquet", **kwargs):
+        """
+        Write the factor risk model to directory.
+
+        Parameters
+        ----------
+        path: str
+          Destination path.
+
+        format: str
+            Supported formats. Default is "parquet". Options
+            are "csv", "parquet" and "hdf".
+
+        **kwargs: dict
+            Optional keyword arguments for the write operation.
+        """
+        method_name = f"to_{format}"
+        getattr(self._factor_exposures, method_name)(
+            join(path, f"factor_exposures.{format}"), **kwargs
+        )
+        getattr(self._factor_returns, method_name)(
+            join(path, f"factor_returns.{format}"), **kwargs
+        )
+        getattr(self._residual_returns, method_name)(
+            join(path, f"residual_returns.{format}"), **kwargs
+        )
+        with open(join(path, "metadata.json"), mode="w+") as fp:
+            json.dump(self.asdict(), fp)
+
+    @classmethod
+    def read_directory(cls, path: str, format: str = "parquet", **kwargs):
+        """
+        Read model from specified directory.
+
+        Parameters
+        ----------
+        path: str
+            Directory to read model from.
+
+        format: str
+            Supported formats. Default is "parquet". Options
+            are "csv", "parquet" and "hdf".
+
+        **kwargs: dict
+            Optional keyword arguments for the write operation.
+        """
+        method_name = f"read_{format}"
+        import pandas
+
+        method = getattr(pandas, method_name)
+        factor_exposures = method(join(path, f"factor_exposures.{format}"), **kwargs)
+        factor_exposures.index.name = None
+        factor_returns = method(join(path, f"factor_returns.{format}"), **kwargs)
+        factor_returns.index.name = None
+        residual_returns = method(join(path, f"residual_returns.{format}"), **kwargs)
+        residual_returns.index.name = None
+        with open(join(path, "metadata.json")) as fp:
+            metadata = json.load(fp)
+
+        return cls(
+            factor_exposures=factor_exposures,
+            factor_returns=factor_returns,
+            residual_returns=residual_returns,
+            **metadata,
+        )
