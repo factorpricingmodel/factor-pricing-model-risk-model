@@ -21,7 +21,7 @@ class APCAConfig(FactorRiskModel.ConfigClass):
         Indicate whether to demean before fitting. Default is True.
     """
 
-    n_components: int
+    n_components: Union[int, float, str]
     demean: Optional[bool] = True
 
 
@@ -107,7 +107,7 @@ class APCA(FactorRiskModel):
 
         # Fill back the instruments which don't have any returns
         # with 0.0 exposures and residual returns
-        B_reindex = eg.zeros((self._config.n_components, N))
+        B_reindex = eg.zeros((B.shape[0], N))
         residual_returns_reindex = eg.zeros(X.shape)
         B_reindex[:, X_reindex] = B[:, :]
         residual_returns_reindex[:, X_reindex] = residual_returns[:, :]
@@ -116,9 +116,7 @@ class APCA(FactorRiskModel):
 
         # Convert back to dataframe if necessary
         if isinstance(X, DataFrame):
-            factor_index = [
-                f"factor_{index + 1}" for index in range(self._config.n_components)
-            ]
+            factor_index = [f"factor_{index + 1}" for index in range(B.shape[0])]
             B = DataFrame(B, index=factor_index, columns=X.columns)
             F = DataFrame(F, index=X.index, columns=factor_index)
             residual_returns = DataFrame(
