@@ -4,6 +4,25 @@ All noteable changes to this project will be documented in this file.
 
 <!--next-version-placeholder-->
 
+## v2023.4.0 (2023-06-05)
+
+### Feature
+
+* Add API to download crypto sample data ([`6041ada`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/6041adace44504aa0e280cdf96f0be1791cd3684))
+* Support writing and reading from directory ([`2553366`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/25533669a7f1f80924b217e3dbc1f9765d0acdff))
+* Allow setting validity in fitting and transforming rolling risk model ([`32a1f6a`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/32a1f6aade49867a1d25e07332585ff075e60861))
+* Support asymptotic principal components (APCA) ([`7169189`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/71691898e12e1165012778ac89d26ab6ff7353a8))
+
+### Fix
+
+* Align parameter n_components type in apca with scikit-learn ([`3394dbf`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/3394dbf28e32840a2db9b15729738ab8d4a4c7a2))
+
+### Documentation
+
+* Update example notebook ([`b102c02`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/b102c0287141398da87099d20021b2c9adea8361))
+* Add apca section ([`7f41707`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/7f4170718d7197d355cc6cea0a874366b55e173c))
+* Change the weights to market cap sqrt ([`20574e4`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/20574e4b8e7a05b649d9eb4742b18f7f66c6cbe3))
+
 ## v2023.3.0 (2023-03-10)
 ### Feature
 * Support WLS in PCA statistical risk model ([`71fc3e2`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/71fc3e2a32b2463eed822eb43184b6593d5073a3))
