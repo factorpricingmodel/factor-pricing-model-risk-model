@@ -56,6 +56,12 @@ model on an "enterprise-like" level.
 The target audiences are researchers, developers and fund
 management looking for flexibility in creating risk models.
 
+## Examples
+
+For end-to-end examples, please refer to [examples](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/tree/main/examples) for the below notebooks
+
+- [Cryptocurrency Statistical Risk Model](https://colab.research.google.com/github/factorpricingmodel/factor-pricing-model-risk-model/blob/main/examples/notebook/crypto_statistical_risk_model.ipynb)
+
 ## Features
 
 Basically, there are three major features provided in the library
