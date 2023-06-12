@@ -49,10 +49,10 @@ repos:
     hooks:
       - id: codespell
         args: ["-I", ".codespell.whitelist", "-S", "*.ipynb"]
-  - repo: https://github.com/PyCQA/flake8
-    rev: 5.0.4
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.0.272
     hooks:
-      - id: flake8
+      - id: ruff
   - repo: https://github.com/PyCQA/bandit
     rev: 1.7.4
     hooks:
