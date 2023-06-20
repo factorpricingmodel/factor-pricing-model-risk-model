@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Dict, Optional, Union
 
 from numpy import nan, ndarray, sqrt, sum
 from pandas import DataFrame, Series
@@ -9,7 +9,7 @@ from ..rolling_factor_risk_model import RollingFactorRiskModel
 
 def compute_value_at_risk_threshold(
     weights: DataFrame,
-    rolling_risk_model: Optional[RollingFactorRiskModel] = None,
+    rolling_risk_model: Optional[Union[RollingFactorRiskModel, Dict[Any, Any]]] = None,
     forecast_vols: Optional[Series] = None,
     threshold: Optional[float] = 0.95,
     cov_halflife: Optional[float] = None,
@@ -25,8 +25,9 @@ def compute_value_at_risk_threshold(
         respectively. The weights should be normalized, i.e.
         sum to one for each time frame.
 
-    rolling_risk_model: Optional[RollingFactorRiskModel]
-        The rolling risk model.
+    rolling_risk_model: Union[RollingFactorRiskModel, Dict[Any, Any]]
+        A rolling risk model object or dictionary of covariances of
+        which the keys and values are dates and covariances.
 
     forecast_vols: Optional[Series]
         The forecast volatility of instruments.
@@ -48,12 +49,12 @@ def compute_value_at_risk_threshold(
             risk_model = rolling_risk_model.get(index)
             if risk_model is None:
                 continue
-            cov = (
-                risk_model.cov(halflife=cov_halflife)
-                .reindex(index=instruments, columns=instruments)
-                .fillna(0.0)
-                .values
-            )
+            elif isinstance(risk_model, DataFrame):
+                cov = risk_model
+            else:
+                cov = risk_model.cov(halflife=cov_halflife)
+
+            cov = cov.reindex(index=instruments, columns=instruments).fillna(0.0).values
             vol = sqrt((cov @ index_weights) @ index_weights)
         else:
             vol = forecast_vols[index]
@@ -65,7 +66,7 @@ def compute_value_at_risk_threshold(
 def compute_value_at_risk_breach_statistics(
     X: DataFrame,
     weights: DataFrame,
-    rolling_risk_model: Optional[RollingFactorRiskModel] = None,
+    rolling_risk_model: Optional[Union[RollingFactorRiskModel, Dict[Any, Any]]] = None,
     forecast_vols: Optional[Series] = None,
     threshold: Optional[float] = 0.95,
     cov_halflife: Optional[float] = None,
@@ -85,8 +86,9 @@ def compute_value_at_risk_breach_statistics(
         respectively. The weights should be normalized, i.e.
         sum to one for each time frame.
 
-    rolling_risk_model: Optional[RollingFactorRiskModel]
-        The rolling risk model.
+    rolling_risk_model: Union[RollingFactorRiskModel, Dict[Any, Any]]
+        A rolling risk model object or dictionary of covariances of
+        which the keys and values are dates and covariances.
 
     forecast_vols: Optional[Series]
         The forecast volatility of instruments.
@@ -113,7 +115,7 @@ def compute_value_at_risk_rolling_breach_statistics(
     X: ndarray,
     weights: ndarray,
     window: int,
-    rolling_risk_model: Optional[RollingFactorRiskModel] = None,
+    rolling_risk_model: Optional[Union[RollingFactorRiskModel, Dict[Any, Any]]] = None,
     forecast_vols: Optional[Series] = None,
     threshold: Optional[float] = 0.95,
     min_periods: Optional[int] = None,
@@ -138,8 +140,9 @@ def compute_value_at_risk_rolling_breach_statistics(
         The number of rolling time frames to compute the percentage
         of returns breaching the specified VaR.
 
-    rolling_risk_model: Optional[RollingFactorRiskModel]
-        The rolling risk model.
+    rolling_risk_model: Union[RollingFactorRiskModel, Dict[Any, Any]]
+        A rolling risk model object or dictionary of covariances of
+        which the keys and values are dates and covariances.
 
     forecast_vols: Optional[Series]
         The forecast volatility of instruments.

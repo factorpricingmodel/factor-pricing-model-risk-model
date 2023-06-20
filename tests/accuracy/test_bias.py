@@ -49,3 +49,21 @@ def test_compute_bias_statistics(daily_returns, weights, rolling_factor_risk_mod
         index=weights.index,
     )
     assert_series_equal(expected_bias_statistics, bias_statistics)
+
+
+def test_compute_bias_statistics_dict(
+    daily_returns, weights, rolling_factor_risk_model
+):
+    covs = {date: cov for date, cov in rolling_factor_risk_model.items()}
+    bias_statistics = compute_bias_statistics(
+        X=daily_returns,
+        weights=weights,
+        rolling_risk_model=covs,
+        window=5,
+        min_periods=0,
+    )
+    expected_bias_statistics = Series(
+        array([nan, nan, nan, nan, nan, nan, nan, 1.8305485, 1.47255984, 1.31524515]),
+        index=weights.index,
+    )
+    assert_series_equal(expected_bias_statistics, bias_statistics)

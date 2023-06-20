@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Dict, Optional, Union
 
 from numpy import nan, sqrt, sum
 from pandas import DataFrame, Series
@@ -9,7 +9,7 @@ from ..rolling_factor_risk_model import RollingFactorRiskModel
 def compute_standardized_returns(
     X: DataFrame,
     weights: DataFrame,
-    rolling_risk_model: Optional[RollingFactorRiskModel] = None,
+    rolling_risk_model: Optional[Union[RollingFactorRiskModel, Dict[Any, Any]]] = None,
     forecast_vols: Optional[Series] = None,
     cov_halflife: Optional[float] = None,
 ) -> Series:
@@ -28,8 +28,9 @@ def compute_standardized_returns(
         The instrument forecast returns.
     weights: ndarray
         Weights of the instruments.
-    rolling_risk_model: RollingFactorRiskModel
-        The rolling risk model.
+    rolling_risk_model: Union[RollingFactorRiskModel, Dict[Any, Any]]
+        A rolling risk model object or dictionary of covariances of
+        which the keys and values are dates and covariances.
     forecast_vols: Series
         The forecast volatility.
     cov_halflife: Optional[float]
@@ -50,12 +51,11 @@ def compute_standardized_returns(
             risk_model = rolling_risk_model.get(index)
             if risk_model is None:
                 continue
-            cov = (
-                risk_model.cov(halflife=cov_halflife)
-                .reindex(index=instruments, columns=instruments)
-                .fillna(0.0)
-                .values
-            )
+            elif isinstance(risk_model, DataFrame):
+                cov = risk_model
+            else:
+                cov = risk_model.cov(halflife=cov_halflife)
+            cov = cov.reindex(index=instruments, columns=instruments).fillna(0.0).values
             vol = sqrt((cov @ index_weights) @ index_weights)
         b_t[index] = returns / vol
 
@@ -66,7 +66,7 @@ def compute_bias_statistics(
     X: DataFrame,
     weights: DataFrame,
     window: int,
-    rolling_risk_model: Optional[RollingFactorRiskModel] = None,
+    rolling_risk_model: Optional[Union[RollingFactorRiskModel, Dict[Any, Any]]] = None,
     forecast_vols: Optional[Series] = None,
     min_periods: Optional[int] = None,
     cov_halflife: Optional[float] = None,
@@ -92,8 +92,9 @@ def compute_bias_statistics(
         Weights of the instruments.
     forecast_vols: Optional[Series]
         The forecast volatility.
-    rolling_risk_model: RollingFactorRiskModel
-        The rolling risk model.
+    rolling_risk_model: Union[RollingFactorRiskModel, Dict[Any, Any]]
+        A rolling risk model object or dictionary of covariances of
+        which the keys and values are dates and covariances.
     cov_halflife: Optional[float]
         Halflife in computing covariances.
 
