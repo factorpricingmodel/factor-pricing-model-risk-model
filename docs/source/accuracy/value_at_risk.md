@@ -1,7 +1,7 @@
 # Value at risk (VaR)
 
 Value at risk (VaR) is a risk metric representing the maximum possible
-loss for a given holding horizen and specific level of confidence. It is
+loss for a given holding horizon and specific level of confidence. It is
 mostly to used to estimate the lower bound of the portfolio returns given
 its realised returns.
 
