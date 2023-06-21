@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Union
 
-from numpy import ndarray
+from numpy import diagonal, ndarray, sqrt
 from pandas import DataFrame, Series
 
 from .config import Config
@@ -73,7 +73,22 @@ class RiskModel(ABC):
             diagonal entries are the variances.
         """
 
-    def corr(self, **kwargs):
+    def vol(self, **kwargs) -> ndarray:
+        """
+        Get the volatility series.
+
+        Returns
+        -------
+        numpy.ndarray
+            Volatility series derived from covariance matrix.
+        """
+        cov = self.cov(**kwargs)
+        vol = sqrt(diagonal(cov))
+        if isinstance(cov, DataFrame):
+            vol = Series(vol, index=cov.index)
+        return vol
+
+    def corr(self, **kwargs) -> ndarray:
         """
         Get the correlation matrix.
 
