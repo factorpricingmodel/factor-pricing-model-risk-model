@@ -4,6 +4,22 @@ All noteable changes to this project will be documented in this file.
 
 <!--next-version-placeholder-->
 
+## v2023.5.0 (2023-06-22)
+
+### Feature
+
+* Add covariance estimator ([`4b5d5d4`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/4b5d5d428faed82b21392d7eec93bb9bd38f5767))
+* Allow passing dict of covariances in accuracy functions ([`3f2452d`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/3f2452d7a59ae3b3c30ad339f52b4ef423edca02))
+
+### Documentation
+
+* Remove unused imports in example notebook ([`d415101`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/d415101271b0058b61a1ad6d859246e5d1da8221))
+* Update example notebook ([`cd71b0f`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/cd71b0fcc804951ab1bde056702fcbfa2f67cd2e))
+* Correct typo ([`e711966`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/e711966b091d8a38d6c783552a058813b21eb323))
+* Update notebook ([`f9a72a9`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/f9a72a9aeb4bdf10af8c700d47fd9fefffd5c883))
+* Update README and notebook example ([`cc53ae3`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/cc53ae301be387a6dd2a5a133cf6f58b9e14386c))
+* Update crypto statistical risk model notebook ([`c66f934`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/c66f93462435ec40f895d1161c2b6003ccea637c))
+
 ## v2023.4.0 (2023-06-05)
 
 ### Feature
