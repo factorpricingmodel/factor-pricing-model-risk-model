@@ -1,4 +1,4 @@
-__version__ = "2023.5.0"
+__version__ = "2023.5.1"
 
 # flake8: noqa
 from .factor_risk_model import FactorRiskModel
