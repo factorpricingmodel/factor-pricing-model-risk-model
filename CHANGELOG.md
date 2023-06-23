@@ -4,6 +4,16 @@ All noteable changes to this project will be documented in this file.
 
 <!--next-version-placeholder-->
 
+## v2023.5.1 (2023-06-23)
+
+### Feature
+
+* Add covariance shrinkage ([`fa59413`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/fa59413221728f9dc4c8aebe15a3d65ee4cccc11))
+
+### Fix
+
+* Insufficient returns in fitting rolling risk model ([`96ca77b`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/96ca77b70e6c7bcca86b47553d3e9507d04139da))
+
 ## v2023.5.0 (2023-06-22)
 
 ### Feature
