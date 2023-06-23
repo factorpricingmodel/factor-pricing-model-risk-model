@@ -161,6 +161,9 @@ class RollingRiskModel:
                     validity_input = validity.loc[index_name]
                     X_input = X_input.loc[:, validity_input]
 
+                if X_input.shape[1] == 0:
+                    continue
+
                 params = {}
                 if weights_input is not None:
                     params["weights"] = weights_input

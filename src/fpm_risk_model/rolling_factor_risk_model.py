@@ -91,6 +91,10 @@ class RollingFactorRiskModel(RollingRiskModel):
                 validity_input = validity.loc[index]
                 y_input = y_input.loc[:, validity_input]
 
+            # Skip if the number of sample size is zero
+            if y_input.shape[1] == 0:
+                continue
+
             risk_model = self.get(index)
             values[index] = risk_model.transform(
                 y=y_input.fillna(0.0),
