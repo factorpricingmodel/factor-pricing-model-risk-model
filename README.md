@@ -114,10 +114,32 @@ cov = risk_model.cov()
 corr = risk_model.corr()
 ```
 
-The following features will be supported in the near future
+Alternatively, covariance estimator `CovarianceEstimator`
+(or `RollingCovarianceEstimator` in a rolling basis) provides advanced
+features, including covariance shrinkage and variance adjustment.
+The following shrinkage methods are supported
 
-- Covariance shrinkage
-- Covariance estimation from returns
+- Constant
+- Ledoit Wolf shrinkage (Q3 2023)
+- Oracle Approximating shrinkage (Q3 2023)
+
+For example, to construct a rolling covariance estimator with constant
+shrinkage delta 0.2,
+
+```
+estimator = RollingCovarianceEstimator(
+  rolling_risk_model,
+  shrinkage_method="constant",
+  delta=0.2
+)
+```
+
+then the covariance can be computed with the rolling risk model and
+volatilities with better forecasting accuracy
+
+```
+estimator.cov(volatility=another_estimated_vol)
+```
 
 For further details, please refer to the [section](https://factor-pricing-model-risk-model.readthedocs.io/en/latest/risk_model/covariance.html) in the documentation.
 
@@ -149,11 +171,9 @@ compute_bias_statistics(
 
 The following major features will be enhanced
 
-- Factor exposures computation from factor returns (Q2 2023)
-- Shrinking covariance (Q2 2023)
-- Exponential decay weighted least squares regression (Q3 2023)
-- Multiple types of running engine, e.g. Tensorflow (Q3 2023)
-- Multi-asset class factor model (Q3 2023)
+- Factor exposures computation from factor returns (Q3 2023)
+- Shrinking covariance (Q3 2023)
+- Multi-asset class factor model (Q4 2023)
 - Fundamental type risk model (Q4 2023)
 
 ## Contribution
