@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
-from typing import Any, Union
+from typing import Union
 
 from numpy import diagonal, ndarray, sqrt
 from pandas import DataFrame, Series
 
 from .config import Config
 from .engine import NumpyEngine
+
+np = NumpyEngine()
 
 
 class RiskModelConfig(Config):
@@ -33,23 +35,17 @@ class RiskModel(ABC):
 
     ConfigClass = RiskModelConfig
 
-    def __init__(
-        self, engine: Any = None, show_all_instruments: bool = False, **kwargs
-    ):
+    def __init__(self, show_all_instruments: bool = False, **kwargs):
         """
         Constructor.
 
         Parameters
         ----------
-        engine : Engine object.
-            Engine used in computation.
-
         show_all_instruments : bool.
             Indicate whether to show all instruments. Default is False.
             If True, the instruments outside of the universe in each
             period may not be filtered out.
         """
-        self._engine = engine or NumpyEngine()
         self._config = self.ConfigClass(
             show_all_instruments=show_all_instruments, **kwargs
         )
@@ -99,7 +95,7 @@ class RiskModel(ABC):
             diagonal entries are all ones.
         """
         cov = self.cov(**kwargs)
-        vol = self._engine.sqrt(self._engine.diagonal(cov))
+        vol = np.sqrt(np.diagonal(cov))
         return ((cov / vol).T / vol).T
 
     def asdict(self):

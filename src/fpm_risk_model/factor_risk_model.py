@@ -5,8 +5,11 @@ from typing import Optional
 from numpy import any, diag_indices_from, nan, ndarray
 from pandas import DataFrame, Series
 
+from .engine import NumpyEngine
 from .regressor import WLS
 from .risk_model import RiskModel
+
+np = NumpyEngine()
 
 
 class FactorRiskModel(RiskModel):
@@ -137,18 +140,17 @@ class FactorRiskModel(RiskModel):
         ndarray
           Specific variances of the instruments.
         """
-        eg = self._engine
         T = self._residual_returns.shape[0]
         residual_returns = self._residual_returns
         if isinstance(self._residual_returns, DataFrame):
             residual_returns = residual_returns.values
 
         if weights is not None:
-            r_mean = eg.mean(residual_returns * weights[:, eg.newaxis], axis=0)
+            r_mean = np.mean(residual_returns * weights[:, np.newaxis], axis=0)
             variances = (residual_returns - r_mean) ** 2
-            variances *= weights[:, eg.newaxis]
+            variances *= weights[:, np.newaxis]
         else:
-            r_mean = eg.mean(residual_returns, axis=0)
+            r_mean = np.mean(residual_returns, axis=0)
             variances = (residual_returns - r_mean) ** 2
 
         variances = sum(variances) / (T - ddof)
@@ -242,7 +244,6 @@ class FactorRiskModel(RiskModel):
             A square pairwise covariance matrix which its
             diagonal entries are the variances.
         """
-        eg = self._engine
         B = self._factor_exposures
         F = self._factor_returns
         if F is None:
@@ -253,10 +254,10 @@ class FactorRiskModel(RiskModel):
         W = None
         T = F.shape[0]
         if halflife is not None:
-            W = eg.array([2 ** (-(T - 1 - t) / halflife) for t in range(0, T)])
-            F = F * (W[:, eg.newaxis] ** 0.5)
+            W = np.array([2 ** (-(T - 1 - t) / halflife) for t in range(0, T)])
+            F = F * (W[:, np.newaxis] ** 0.5)
 
-        F = F - eg.mean(F, axis=0)
+        F = F - np.mean(F, axis=0)
         factor_covariances = (F.T @ F) / (T - ddof)
         specific_variances = self.specific_variances(weights=W, ddof=ddof)
 
