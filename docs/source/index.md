@@ -35,6 +35,13 @@ accuracy/value_at_risk
 ```
 
 ```{toctree}
+:caption: Examples
+:maxdepth: 2
+
+examples/statistical
+```
+
+```{toctree}
 :caption: Project Info
 :maxdepth: 2
 
