@@ -127,6 +127,8 @@ For example, to construct a rolling covariance estimator with constant
 shrinkage delta 0.2,
 
 ```
+from fpm_risk_model import RollingCovarianceEstimator
+
 estimator = RollingCovarianceEstimator(
   rolling_risk_model,
   shrinkage_method="constant",

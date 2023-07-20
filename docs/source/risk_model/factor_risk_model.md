@@ -60,6 +60,8 @@ model
 ```
 import pandas as pd
 
+from fpm_risk_model import FactorRiskModel
+
 risk_model = FactorRiskModel(
     factor_returns=pd.concat([model1.factor_returns, model2.factor_returns])
 )
