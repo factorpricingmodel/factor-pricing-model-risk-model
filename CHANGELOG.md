@@ -4,6 +4,20 @@ All noteable changes to this project will be documented in this file.
 
 <!--next-version-placeholder-->
 
+## v2023.6.0 (2023-07-26)
+
+### Feature
+
+* Relax pandas dependency constraint ([`1bae2fb`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/1bae2fb779955636e1b57bff67abbfc5076661bd))
+* Support various types of numpy engine ([`05eb58c`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/05eb58cfdba0db6bd23a0bebac7dec061c58b1a3))
+
+### Documentation
+
+* Update covariance page ([`6c10a7c`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/6c10a7cd608ed0d0d1a6b450d591884f1af60cb1))
+* Update README ([`bcbea6e`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/bcbea6e3ff0f9e7f29b966f1bdefe02ee85e175a))
+* Add statistical approach example doc ([`d8b2e44`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/d8b2e441b9c1f224e90b69e44cc724ca1fe78164))
+* Fix the missing import ([`37e1dc4`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/37e1dc46c4d460b34981475cd9f1c744eefb587c))
+
 ## v2023.5.1 (2023-06-23)
 
 ### Feature
