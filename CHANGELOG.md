@@ -4,6 +4,10 @@ All noteable changes to this project will be documented in this file.
 
 <!--next-version-placeholder-->
 
+## v2023.6.1 (2023-07-26)
+
+
+
 ## v2023.6.0 (2023-07-26)
 
 ### Feature
