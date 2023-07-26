@@ -34,7 +34,7 @@ def download_sample_data_estimation_universe():
     data = {}
     response = requests.get(
         "https://github.com/factorpricingmodel/factor-pricing-model-risk-model"
-        "/raw/main/examples/notebook/crypto_estimation_universe.zip",
+        "/raw/main/examples/notebook/crypto_estimation_universe_sample_data.zip",
         stream=True,
     )
     with ZipFile(io.BytesIO(response.content)) as zip_ref:
@@ -75,7 +75,7 @@ def download_sample_data_model_universe():
     data = {}
     response = requests.get(
         "https://github.com/factorpricingmodel/factor-pricing-model-risk-model"
-        "/raw/main/examples/notebook/crypto_model_universe.zip",
+        "/raw/main/examples/notebook/crypto_model_universe_sample_data.zip",
         stream=True,
     )
     with ZipFile(io.BytesIO(response.content)) as zip_ref:
