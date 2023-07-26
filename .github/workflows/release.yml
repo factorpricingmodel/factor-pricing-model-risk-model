@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install python-semantic-release
-        run: pip install python-semantic-release
+        run: pip install python-semantic-release==7.34.6
       - name: Release
         env:
           REPOSITORY_PASSWORD: ${{ secrets.REPOSITORY_PASSWORD }}
