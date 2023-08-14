@@ -186,13 +186,6 @@ class FactorRiskModel(RiskModel):
         X = self.factor_returns
         if X is None:
             raise ValueError("Factor returns must be initialised first")
-        if not isinstance(X, (ndarray, DataFrame)):
-            raise TypeError(
-                "Factor returns should be in numpy ndarray type, but got "
-                f"{X.__class__.__name__}. If it is a rolling "
-                "risk model, please use `RollingFactorRiskModelTransformer` "
-                "instead"
-            )
 
         # Convert the factor returns into a ndarray first
         if isinstance(X, DataFrame):
