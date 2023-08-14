@@ -4,6 +4,12 @@ All noteable changes to this project will be documented in this file.
 
 <!--next-version-placeholder-->
 
+## v2023.6.2 (2023-08-14)
+
+### Fix
+
+* Remove the type check to support multiple engines ([`dd0d8a8`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/dd0d8a88a5146b42cae920c92fe68fe82f88ec25))
+
 ## v2023.6.1 (2023-07-26)
 
 
