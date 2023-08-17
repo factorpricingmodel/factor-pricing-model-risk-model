@@ -4,6 +4,12 @@ All noteable changes to this project will be documented in this file.
 
 <!--next-version-placeholder-->
 
+## v2023.6.3 (2023-08-17)
+
+### Fix
+
+* Ensure to_numpy converts with the numpy engine array ([`cd014ce`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/cd014ce0028e3796e66d1f27e74e7d9090562506))
+
 ## v2023.6.2 (2023-08-14)
 
 ### Fix
