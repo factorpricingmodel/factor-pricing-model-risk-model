@@ -112,9 +112,9 @@ class RiskModel(ABC):
         if values is None:
             return values
         elif isinstance(values, (DataFrame, Series)):
-            return np.array(values.values)
+            return values.values
         elif isinstance(values, ndarray):
-            return np.array(values)
+            return values
         else:
             raise TypeError(
                 "Expect either pandas DataFrame or numpy array, "
