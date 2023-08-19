@@ -4,6 +4,12 @@ All noteable changes to this project will be documented in this file.
 
 <!--next-version-placeholder-->
 
+## v2023.6.4 (2023-08-19)
+
+### Fix
+
+* Revert forcing numpy array conversion ([`6676fef`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/6676fefc7842e41c10ca735afccc241fad0d1d6e))
+
 ## v2023.6.3 (2023-08-17)
 
 ### Fix
