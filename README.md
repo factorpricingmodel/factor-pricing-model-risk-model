@@ -62,6 +62,8 @@ For end-to-end examples, please refer to [examples](https://github.com/factorpri
 
 - [Cryptocurrency Statistical Risk Model](https://colab.research.google.com/github/factorpricingmodel/factor-pricing-model-risk-model/blob/main/examples/notebook/crypto_statistical_risk_model.ipynb)
 
+- [NumPy Backend Engine](https://colab.research.google.com/github/factorpricingmodel/factor-pricing-model-risk-model/blob/main/examples/notebook/numpy_backend_engine.ipynb)
+
 ## Features
 
 Basically, there are three major features provided in the library
