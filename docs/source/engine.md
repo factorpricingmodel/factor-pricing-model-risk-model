@@ -4,11 +4,11 @@ Currently, the default engine (and the array type) is NumPy. Users can switch to
 backend engines for computational acceleration. Currently the following engines are supported in
 CPU and GPU runtime.
 
-- `NumPy (Default) <https://numpy.org/>`\_
+- [NumPy (Default)](https://numpy.org/)
 
-- `JAX <https://jax.readthedocs.io/en/latest/index.html#>`\_
+- [JAX](https://jax.readthedocs.io/en/latest/index.html#)
 
-- `TensorFlow <https://www.tensorflow.org/guide/tf_numpy>`\_
+- [TensorFlow](https://www.tensorflow.org/guide/tf_numpy)
 
 The backend engine can be switched in the following ways.
 
