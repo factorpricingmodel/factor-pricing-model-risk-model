@@ -15,6 +15,6 @@ data.
 
 ## What are the expected input types?
 
-Currently only Pandas (DataFrame / Series) and NumPy (array) are 
+Currently only Pandas (DataFrame / Series) and NumPy (array) are
 accepted in modeling input, while we are extending to accept Polars
 (DataFrame / Series) in the future.

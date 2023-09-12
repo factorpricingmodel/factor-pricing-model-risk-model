@@ -1,20 +1,20 @@
 # Backend Engine
 
-Currently, the default engine (and the array type) is NumPy. Users can switch to various of supported 
-backend engines for computational acceleration. Currently the following engines are supported in 
+Currently, the default engine (and the array type) is NumPy. Users can switch to various of supported
+backend engines for computational acceleration. Currently the following engines are supported in
 CPU and GPU runtime.
 
-* `NumPy (Default) <https://numpy.org/>`_
+- `NumPy (Default) <https://numpy.org/>`\_
 
-* `JAX <https://jax.readthedocs.io/en/latest/index.html#>`_
+- `JAX <https://jax.readthedocs.io/en/latest/index.html#>`\_
 
-* `TensorFlow <https://www.tensorflow.org/guide/tf_numpy>`_
+- `TensorFlow <https://www.tensorflow.org/guide/tf_numpy>`\_
 
 The backend engine can be switched in the following ways.
 
 ## Local
 
-Users can use context manager ``use_backend`` in a ``with`` statement to temporarily
+Users can use context manager `use_backend` in a `with` statement to temporarily
 switch the NumPy engine.
 
 In the following example, to fit a PCA model, a NumPy array of daily returns `daily_returns`
@@ -32,7 +32,6 @@ with use_backend("tensorflow"):
 Looking into the type of the fitted factor returns, you will see `Tensor` type rather than
 NumPy `array` type.
 
-
 ```
 print(model.factor_returns.__class__.__name__)    # Tensor type
 ```
@@ -43,13 +42,11 @@ In the meantime, users can switch the backend engine in global with function `se
 
 For example, the following code switches the library backend to Tensorflow in the whole session.
 
-
 ```
 from fpm_risk_model.engine import set_backend
 
 set_backend("tensorflow")
 ```
-
 
 ## Reference
 
