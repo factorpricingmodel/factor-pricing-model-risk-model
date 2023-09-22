@@ -4,6 +4,19 @@ All noteable changes to this project will be documented in this file.
 
 <!--next-version-placeholder-->
 
+## v2023.6.5 (2023-09-22)
+
+### Fix
+
+* Use engine linalg in WLS ([`98ea2ed`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/98ea2ed5946fb1fac619f68003312b83446884ae))
+
+### Documentation
+
+* Fix syntax issue ([`cc8b9f5`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/cc8b9f5c8d9936d7d6b53a2e743c3a473f4f6fa6))
+* Fix lint ([`89a55c7`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/89a55c7611e2a7abd59cda7e124903de10158df6))
+* Add engine ([`7cd84d7`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/7cd84d7620364ca6ed57ea01449ec9bd6410e241))
+* Add numpy backend engine example ([`a81a2eb`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/a81a2eb6f8e076626dd1bfd8da62ef64ee8d09cb))
+
 ## v2023.6.4 (2023-08-19)
 
 ### Fix
