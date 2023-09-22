@@ -2,7 +2,10 @@ from dataclasses import dataclass
 from typing import Optional
 
 from numpy import ndarray
-from numpy.linalg import pinv
+
+from ..engine import LinAlgEngine
+
+linalg = LinAlgEngine()
 
 
 @dataclass
@@ -85,14 +88,14 @@ class WLS:
             if len(weights.shape) == 1 and weights.shape[0] == y.shape[0]:
                 weights = weights**0.5
                 X_t_w = X.T * weights * weights.T
-                beta = pinv(X_t_w @ X) @ X_t_w @ y
+                beta = linalg.pinv(X_t_w @ X) @ X_t_w @ y
             else:
                 raise ValueError(
                     f"Dimension of y {y.shape} does not align with weights "
                     f"{weights.shape}"
                 )
         else:
-            beta = pinv(X.T @ X) @ X.T @ y
+            beta = linalg.pinv(X.T @ X) @ X.T @ y
 
         alpha = y - X @ beta
         return RegressionResult(alpha=alpha, beta=beta)
