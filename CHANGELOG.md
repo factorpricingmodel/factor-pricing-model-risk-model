@@ -4,6 +4,12 @@ All noteable changes to this project will be documented in this file.
 
 <!--next-version-placeholder-->
 
+## v2023.7.2 (2023-09-26)
+
+### Fix
+
+* Convert y into numpy engine array ([`e92fc34`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/e92fc34d00c0f531be6c6d2b7d53f977d08c2b6e))
+
 ## v2023.7.1 (2023-09-26)
 
 ### Feature
