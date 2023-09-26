@@ -91,7 +91,7 @@ class PCA(FactorRiskModel):
 
         # Normalize the instrument return by full history mean
         if self._config.demean:
-            X_mean = np.array(np.mean(X, axis=0))[np.newaxis, :]
+            X_mean = np.array(X.mean(axis=0))[np.newaxis, :]
             X_fit = np.subtract(X_fit, X_mean)
 
         # Remove the instruments without any returns always
@@ -109,11 +109,11 @@ class PCA(FactorRiskModel):
         N = X.shape[1]
         # Dimension (n, N) where n is the number of instruments
         # Eigenvectors
-        U_m = self._model.components_
+        U_m = np.array(self._model.components_)
         # Exposure matrix (n, N)
         B = np.multiply(
             U_m,
-            np.array(self._model.singular_values_ * np.sqrt(T))[:, np.newaxis],
+            np.array(self._model.singular_values_ * (T**0.5))[:, np.newaxis],
         )
         # Factor matrix (T, n)
         wls = WLS()

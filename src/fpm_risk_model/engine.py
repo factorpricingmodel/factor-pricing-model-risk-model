@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from os import environ
 from typing import Any
 
 _BACKEND_ENGINE = "numpy"
@@ -86,6 +87,7 @@ class NumpyEngine:
 
                 anp.array = anp.tensor
                 anp.ndarray = anp.Tensor
+                anp.newaxis = None
             else:
                 raise ValueError(f"Cannot recognize backend {_BACKEND_ENGINE}")
         except ImportError:
@@ -145,5 +147,6 @@ class LinAlgEngine:
             )
 
 
+set_backend(environ.get("FPM_BACKEND_ENGINE", "numpy"))
 numpy = NumpyEngine()
 linalg = LinAlgEngine()

@@ -10,6 +10,8 @@ CPU and GPU runtime.
 
 - [TensorFlow](https://www.tensorflow.org/guide/tf_numpy)
 
+- [PyTorch](https://pytorch.org/)
+
 The backend engine can be switched in the following ways.
 
 ## Local
@@ -46,6 +48,17 @@ For example, the following code switches the library backend to Tensorflow in th
 from fpm_risk_model.engine import set_backend
 
 set_backend("tensorflow")
+```
+
+## Environment variable
+
+Set the environment variable `FPM_BACKEND_ENGINE` before starting the process.
+
+For example, to start the IPython with setting the default backend engine to `torch`, launch the
+terminal as below
+
+```
+FPM_BACKEND_ENGINE=torch ipython
 ```
 
 ## Reference
