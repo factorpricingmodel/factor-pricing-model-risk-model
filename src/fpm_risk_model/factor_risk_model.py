@@ -192,9 +192,7 @@ class FactorRiskModel(RiskModel):
             X = X.values
 
         # Convert the y input to a ndarray first
-        y_input = y
-        if isinstance(y, DataFrame):
-            y_input = y.values
+        y_input = self._to_numpy(y)
 
         # Set the default regressor
         regressor = regressor or WLS()
