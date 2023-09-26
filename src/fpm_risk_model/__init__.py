@@ -1,4 +1,4 @@
-__version__ = "2023.6.5"
+__version__ = "2023.7.0"
 
 # flake8: noqa
 from .cov_estimator import CovarianceEstimator, RollingCovarianceEstimator

@@ -4,6 +4,12 @@ All noteable changes to this project will be documented in this file.
 
 <!--next-version-placeholder-->
 
+## v2023.7.0 (2023-09-26)
+
+### Feature
+
+* Support pytorch in engine ([`1d9eb07`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/1d9eb07602cbdbefeef51f88f1a18bdb1ec26308))
+
 ## v2023.6.5 (2023-09-22)
 
 ### Fix
