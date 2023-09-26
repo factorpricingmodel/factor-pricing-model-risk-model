@@ -4,6 +4,12 @@ All noteable changes to this project will be documented in this file.
 
 <!--next-version-placeholder-->
 
+## v2023.7.1 (2023-09-26)
+
+### Feature
+
+* Support setting the backend engine with environment variable ([`a40ee5c`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/a40ee5cc42b3349fc96052d28568d01f666b313e))
+
 ## v2023.7.0 (2023-09-26)
 
 ### Feature
