@@ -12,6 +12,8 @@ CPU and GPU runtime.
 
 - [PyTorch](https://pytorch.org/)
 
+- [Dask](https://docs.dask.org/en/stable/)
+
 The backend engine can be switched in the following ways.
 
 ## Local

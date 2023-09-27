@@ -3,7 +3,7 @@ from os import environ
 from typing import Any
 
 _BACKEND_ENGINE = "numpy"
-_SUPPORTED_ENGINES = ["numpy", "tensorflow", "cupy", "jax", "torch"]
+_SUPPORTED_ENGINES = ["numpy", "tensorflow", "cupy", "jax", "torch", "dask"]
 
 
 def backend():
@@ -25,8 +25,8 @@ def set_backend(library_name):
     library_name = library_name.lower()
     if library_name not in _SUPPORTED_ENGINES:
         raise ValueError(
-            "Only `numpy`, `tensorflow`, `cupy`, `jax` and `torch` are supported, "
-            f"but not {library_name}"
+            "Only `numpy`, `tensorflow`, `cupy`, `jax`, `torch` and `dask` "
+            f"are supported, but not {library_name}"
         )
     global _BACKEND_ENGINE
     _BACKEND_ENGINE = library_name
@@ -50,8 +50,8 @@ def use_backend(library_name="numpy"):
     library_name = library_name.lower()
     if library_name not in _SUPPORTED_ENGINES:
         raise ValueError(
-            "Only `numpy`, `tensorflow`, `cupy`, `jax` and `torch` are supported, "
-            f"but not {library_name}"
+            "Only `numpy`, `tensorflow`, `cupy`, `jax`, `torch` and `dask` "
+            f"are supported, but not {library_name}"
         )
     global _BACKEND_ENGINE
     _original = _BACKEND_ENGINE
@@ -88,6 +88,11 @@ class NumpyEngine:
                 anp.array = anp.tensor
                 anp.ndarray = anp.Tensor
                 anp.newaxis = None
+            elif _BACKEND_ENGINE == "dask":
+                import dask.array as anp
+                from numpy import newaxis
+
+                anp.newaxis = newaxis
             else:
                 raise ValueError(f"Cannot recognize backend {_BACKEND_ENGINE}")
         except ImportError:
@@ -129,6 +134,11 @@ class LinAlgEngine:
                 import jax.numpy.linalg as alinalg
             elif _BACKEND_ENGINE == "torch":
                 import torch.linalg as alinalg
+            elif _BACKEND_ENGINE == "dask":
+                import dask.array.linalg as alinalg
+
+                # XXX: fall back pinv to inv
+                alinalg.pinv = alinalg.inv
             else:
                 raise ValueError(f"Cannot recognize backend {_BACKEND_ENGINE}")
         except ImportError:
