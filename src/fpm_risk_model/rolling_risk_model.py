@@ -129,6 +129,19 @@ class RollingRiskModel:
         values = {}
 
         T = X.shape[0]
+        start_index = 0
+        if validity is not None:
+            try:
+                start_index = X.index.get_loc(validity.index[0])
+            except:  # noqa: E722
+                raise ValueError(
+                    f"Validity index (e.g. {validity.index[0]}) should "
+                    "exist in X index"
+                )
+
+        if self._config.window is None:
+            raise ValueError("The window must be provided in the config.")
+
         iterator = range(0, T)
         if self._config.show_progress:
             from tqdm import tqdm

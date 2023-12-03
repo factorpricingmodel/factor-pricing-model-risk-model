@@ -1,13 +1,15 @@
 import json
+from datetime import datetime
 from multiprocessing import cpu_count
 from multiprocessing.pool import ThreadPool
 from os import makedirs
 from os.path import join
-from typing import Optional
+from typing import Dict, Optional
 
 from pandas import DataFrame, Timestamp
 
 from .factor_risk_model import FactorRiskModel
+from .risk_model import RiskModel
 from .rolling_risk_model import RollingRiskModel
 
 
@@ -20,11 +22,37 @@ class RollingFactorRiskModel(RollingRiskModel):
     returns.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(
+        self,
+        model: Optional[RiskModel] = None,
+        window: Optional[int] = None,
+        show_progress: Optional[bool] = False,
+        values: Optional[Dict[datetime, RiskModel]] = None,
+    ):
         """
         Constructor.
+
+        Parameters
+        ----------
+        model: Optional[RiskModel]
+            Risk model object to fit in rolling basis.
+
+        window: Optional[int]
+            Number of rolling windows to use from the returns.
+            Must be provided in fitting the model.
+
+        show_progress: Optional[bool]
+            Indicate to show progress bar in running.
+
+        values: Optional[Dict[datetime, RiskModel]]
+            Rolling risk models values.
         """
-        super().__init__(**kwargs)
+        super().__init__(
+            model=model,
+            window=window,
+            show_progress=show_progress,
+            values=values,
+        )
 
     def transform(
         self,
