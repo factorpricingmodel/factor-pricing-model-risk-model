@@ -4,6 +4,20 @@ All noteable changes to this project will be documented in this file.
 
 <!--next-version-placeholder-->
 
+## v2023.8.0 (2023-12-13)
+
+### Feature
+
+* Support dask engine ([`972973f`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/972973fa3cc86786bf9988eb214aa713863cf383))
+
+### Fix
+
+* Use validity in rolling fit ([`087939b`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/087939b9c07a96242d3f7c6ff39a8060d801b2c1))
+
+### Documentation
+
+* Update numpy backend engine notebook ([`5037603`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/50376039629619cdd5396e74f598d1ae769e2369))
+
 ## v2023.7.2 (2023-09-26)
 
 ### Fix
