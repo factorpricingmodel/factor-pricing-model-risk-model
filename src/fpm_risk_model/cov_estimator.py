@@ -1,7 +1,7 @@
 from typing import Optional
 
 from numpy import diag_indices_from, trace
-from pandas import DataFrame, Series
+from pandas import DataFrame, Series, Timestamp
 
 from .risk_model import RiskModel
 from .rolling_factor_risk_model import RollingFactorRiskModel
@@ -143,3 +143,18 @@ class RollingCovarianceEstimator:
             )
             for date, risk_model in self._rolling_risk_model.items()
         }
+
+    def get(self, date: Timestamp) -> CovarianceEstimator:
+        """
+        Get the covariance estimator for a given date.
+
+        Parameters
+        ----------
+        date : pd.Timestamp
+          Date.
+        """
+        return CovarianceEstimator(
+            self._rolling_risk_model.get(date),
+            shrinkage_method=self.shrinkage_method,
+            delta=self.delta,
+        )
