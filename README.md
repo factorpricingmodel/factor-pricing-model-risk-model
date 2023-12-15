@@ -64,6 +64,8 @@ For end-to-end examples, please refer to [examples](https://github.com/factorpri
 
 - [NumPy Backend Engine](https://colab.research.google.com/github/factorpricingmodel/factor-pricing-model-risk-model/blob/main/examples/notebook/numpy_backend_engine.ipynb)
 
+- [Empirical Analysis of Alpha Sizing Rules in Cryptocurrency](https://colab.research.google.com/github/factorpricingmodel/factor-pricing-model-risk-model/blob/main/examples/notebook/crypto_empirical_analysis_alpha_sizing_rules.ipynb)
+
 ## Features
 
 Basically, there are three major features provided in the library
