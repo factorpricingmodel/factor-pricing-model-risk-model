@@ -4,6 +4,16 @@ All noteable changes to this project will be documented in this file.
 
 <!--next-version-placeholder-->
 
+## v2024.0.0 (2024-07-26)
+
+### Feature
+
+* Add a get method for rolling cov estimator ([`da29453`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/da294538dc1a178df6fa3f656ea40682490876b2))
+
+### Documentation
+
+* Add example notebook of alpha sizing rules ([`220ba02`](https://github.com/factorpricingmodel/factor-pricing-model-risk-model/commit/220ba022b95cca015723374f479ff94db8bd504c))
+
 ## v2023.8.0 (2023-12-13)
 
 ### Feature
